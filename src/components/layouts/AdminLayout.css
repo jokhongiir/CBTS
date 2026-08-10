@@ -1,0 +1,114 @@
+/* ==========================================================================
+   LAYOUT CONTAINERS & ARCHITECTURE
+   ========================================================================== */
+
+/* 1. Butun admin panelni o'rab turuvchi asosiy konteyner */
+.admin-layout-wrapper {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  background-color: #f8fafc; /* Slate 50 — toza va chiroyli fon */
+  overflow: hidden;          /* Brauzerning umumiy skroll bo'lishini qat'iy cheklaydi */
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* 2. O'ng tomondagi asosiy kontent bloki (Navbar + Sahifa kontenti) */
+.admin-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-width: 0;             /* Flexbox ichidagi elementlar siqilib ketmasligi uchun muhim */
+  
+  /* Sidebar kengligi (280px) qadar joy qoldiramiz.
+     Chunki sidebar 'position: fixed' orqali qotirilgan. */
+  margin-left: 280px; 
+  
+  background-color: #f8fafc;
+  transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+}
+
+/* 3. Sahifalar yuklanadigan asosiy tana qismi (<Outlet /> o'rnashadigan joy) */
+.admin-page-body {
+  flex: 1;
+  width: 100%;
+  padding: 2rem;
+  overflow-y: auto;         /* MUSTAQIL SKROLL: Faqat sahifaning o'zi mustaqil skroll bo'ladi */
+  box-sizing: border-box;
+  background-color: #f8fafc;
+  
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ==========================================================================
+   PAGE BODY SCROLLBAR DESIGN (Akuratniy & Minimalist)
+   ========================================================================== */
+.admin-page-body::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-page-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-page-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;      /* Slate 300 */
+  border-radius: 100px;
+}
+
+.admin-page-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;      /* Slate 400 */
+}
+
+/* ==========================================================================
+   DYNAMIC STACKING SYSTEM (MODAL UCHUN RUHSAT BERISH)
+   ========================================================================== */
+
+/* Modal ochilganda ushbu layoutlar z-index qoidalarini buzmasligi va
+   modal butun ekran yuzasiga to'liq chiqa olishi uchun 'transform' cheklovlarini olib tashlaymiz */
+.admin-layout-wrapper,
+.admin-main-content,
+.admin-page-body {
+  perspective: none !important;
+  transform: none !important;
+  backface-visibility: visible !important;
+}
+
+/* ==========================================================================
+   RESPONSIVENESS & SCREEN BREAKPOINTS
+   ========================================================================== */
+
+/* Planshetlar va o'rtacha ekranlar uchun (Sidebar 80px ga kichrayganda) */
+@media (max-width: 1024px) {
+  .admin-main-content {
+    /* Sidebar.css dagi collapse holatiga mos ravishda 80px qilamiz */
+    margin-left: 80px; 
+  }
+  
+  .admin-page-body {
+    padding: 1.75rem; /* Bo'shliqni bir oz kamaytiramiz */
+  }
+}
+
+/* Mobil qurilmalar uchun (Telefonlar) */
+@media (max-width: 768px) {
+  .admin-layout-wrapper {
+    flex-direction: column; /* Mobil ekranda sidebar yuqoriga o'tadi yoki berkinadi */
+  }
+
+  .admin-main-content {
+    margin-left: 0 !important; /* Mobil telefonda chekka bo'shliq butunlay yo'qoladi */
+    height: auto;
+  }
+
+  .admin-page-body {
+    padding: 1rem;
+    height: calc(100vh - 60px); /* Mobil menyudan tashqari qolgan joyni skroll qilish uchun */
+  }
+}

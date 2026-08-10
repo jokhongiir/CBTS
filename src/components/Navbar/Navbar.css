@@ -1,0 +1,199 @@
+/* ==========================================================================
+   NAVBAR VARIABLES & SYSTEM
+   ========================================================================== */
+:root {
+  --navbar-bg: #ffffff;
+  --navbar-border: #e2e8f0; /* Slate 200 */
+  --navbar-text-main: #0f172a; /* Slate 900 */
+  --navbar-text-muted: #64748b; /* Slate 500 */
+  --navbar-notify-color: #f43f5e; /* Pushti-qizil bildirishnoma uchun */
+  --navbar-avatar-bg: #f1f5f9;
+  --navbar-avatar-icon: #4f46e5;
+  --radius-circle: 50%;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
+   NAVBAR HEADER MAIN CONTAINER
+   ========================================================================== */
+.navbar-header {
+  height: 70px;
+  background-color: var(--navbar-bg);
+  border-bottom: 1px solid var(--navbar-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  /* Sidebar z-index: 100, modal esa 99999. Shuning uchun navbar 90 darajada turishi optimal */
+  z-index: 90; 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   NAVBAR LEFT (Sana qismi)
+   ========================================================================== */
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-date {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--navbar-text-muted);
+  background-color: #f8fafc;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid #f1f5f9;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   NAVBAR RIGHT (Profil va Bildirishnomalar)
+   ========================================================================== */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Notification Button & Badge */
+.navbar-notify-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  font-size: 1.35rem;
+  color: var(--navbar-text-muted);
+  padding: 0.5rem;
+  border-radius: var(--radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.navbar-notify-btn:hover {
+  background-color: #f1f5f9;
+  color: var(--navbar-text-main);
+}
+
+/* Pulsatsiya qiluvchi faol qizil nuqta */
+.navbar-notify-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background-color: var(--navbar-notify-color);
+  border-radius: var(--radius-circle);
+  border: 2px solid var(--navbar-bg);
+}
+
+.navbar-notify-badge::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-circle);
+  border: 2px solid var(--navbar-notify-color);
+  animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  opacity: 0;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  80%, 100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   PROFILE CARD SECTION
+   ========================================================================== */
+.navbar-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.375rem 0.75rem 0.375rem 0.375rem;
+  border-radius: 9999px;
+  transition: background-color 0.15s ease;
+}
+
+.navbar-profile:hover {
+  background-color: #f8fafc;
+}
+
+/* Avatar Circle */
+.navbar-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-circle);
+  background-color: var(--navbar-avatar-bg);
+  color: var(--navbar-avatar-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: 1.5px solid var(--navbar-border);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Profile Info Texts */
+.navbar-profile-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.navbar-admin-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--navbar-text-main);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.navbar-role {
+  font-size: 0.7rem !important;
+  color: var(--navbar-text-muted);
+  font-weight: 500;
+  margin-top: 0.1rem;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (Kichik ekranlar moslashuvchanligi)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .navbar-header {
+    padding: 0 1rem;
+  }
+
+  .navbar-date {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .navbar-right {
+    gap: 0.75rem;
+  }
+
+  .navbar-profile-info {
+    display: none; /* Juda kichik ekranlarda faqat avatar qoladi */
+  }
+
+  .navbar-profile {
+    padding: 0;
+  }
+}

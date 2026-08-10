@@ -1,0 +1,280 @@
+/* --- IA ULTRA GLASSMORPHISM SYSTEM --- */
+:root {
+  --ia-primary: #2c388d;
+  --ia-primary-hover: #1f286b;
+  --ia-accent: #f26522;
+  --ia-accent-glow: rgba(242, 101, 34, 0.15);
+  
+  /* Shaffof karta ranglari */
+  --ia-surface: rgba(255, 255, 255, 0.12);
+  --ia-surface-hover: rgba(255, 255, 255, 0.22);
+  
+  --ia-text-main: #0f172a;
+  --ia-text-muted: #475569;
+  --ia-border-glass: rgba(255, 255, 255, 0.35);
+}
+
+.ia-gateway-root {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 2rem 1rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Fon Kanvas Animatsiyasi */
+.ia-dynamic-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Markazlashtirilgan asosiy konteyner */
+.ia-gateway-wrapper {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  margin: auto;
+  text-align: center;
+}
+
+/* Header qismi */
+.ia-header-cluster {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+/* Logo va matnni yonma-yon qilish qatori */
+.ia-brand-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 1.25rem;
+}
+
+.ia-brand-logo-wrap {
+  width: 56px;
+  height: 56px;
+  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 8px;
+}
+
+.ia-brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ia-brand-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--ia-primary);
+  margin: 0;
+  letter-spacing: -0.03em;
+  text-align: left;
+}
+
+.ia-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ia-accent-glow);
+  color: var(--ia-accent);
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  border: 1px solid rgba(242, 101, 34, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.ia-brand-subtitle {
+  color: var(--ia-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  max-width: 410px;
+  margin: 0;
+}
+
+/* Karta konteyneri (Shaffof Glassmorphism va Markazlashtirilgan) */
+.ia-card-deck {
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.ia-interactive-card {
+  background: var(--ia-surface);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--ia-border-glass);
+  border-radius: 28px;
+  padding: 2.2rem;
+  
+  /* Markazlash */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05), 
+              inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.ia-interactive-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 30px 60px -15px rgba(44, 56, 141, 0.12), 
+              inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  background: var(--ia-surface-hover);
+}
+
+.ia-icon-frame {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: var(--ia-primary);
+  box-shadow: 0 6px 16px rgba(44, 56, 141, 0.05);
+}
+
+.ia-card-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ia-card-info h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ia-text-main);
+  margin: 0 0 6px 0;
+  letter-spacing: -0.01em;
+}
+
+.ia-card-info p {
+  font-size: 0.88rem;
+  color: var(--ia-text-muted);
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
+  max-width: 360px;
+}
+
+.ia-action-trigger {
+  width: 100%;
+  background: var(--ia-primary);
+  color: white;
+  border: none;
+  padding: 0.85rem 1.2rem;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 20px rgba(44, 56, 141, 0.25);
+  cursor: pointer;
+}
+
+.ia-interactive-card:hover .ia-action-trigger {
+  background: var(--ia-primary-hover);
+  box-shadow: 0 12px 28px rgba(44, 56, 141, 0.35);
+}
+
+/* Admin tugmasi */
+.ia-sub-nav {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.75rem;
+}
+
+.ia-admin-trigger {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: var(--ia-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 14px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.ia-admin-trigger:hover {
+  color: var(--ia-primary);
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(44, 56, 141, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Footer qismi */
+.ia-footer-note {
+  font-size: 0.75rem;
+  color: var(--ia-text-muted);
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Mobil moslashuv */
+@media (max-width: 480px) {
+  .ia-gateway-root {
+    padding: 1.5rem 1rem;
+  }
+  
+  .ia-interactive-card {
+    padding: 1.6rem;
+  }
+
+  .ia-brand-title {
+    font-size: 1.5rem;
+  }
+}

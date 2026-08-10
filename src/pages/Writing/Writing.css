@@ -1,0 +1,464 @@
+/* ================================================================= *
+ *                   IELTS WRITING ADMIN PANEL CSS                   *
+ * ================================================================= */
+
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: #eef2ff;
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --danger-light: #fee2e2;
+  --success: #10b981;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: all 0.25s ease;
+}
+
+/* Asosiy konteyner animatsiyasi */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Panel sarlavhasi */
+.writing-container-panel,
+.writing-panel-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
+  margin: 1.5rem auto;
+  max-width: 1200px;
+}
+
+.writing-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.writing-dashboard-header h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+}
+
+.writing-dashboard-header p,
+.writing-dashboard-header span {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Tugmalar dizayni */
+.btn-add-new-writing {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+.btn-add-new-writing:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-icon-back {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-icon-back:hover:not(:disabled) {
+  background: var(--border-color);
+}
+
+/* Qidiruv inputi */
+.search-input-wrapper input {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  transition: var(--transition);
+  outline: none;
+}
+
+.search-input-wrapper input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* Jadval (Table) dizayni */
+.writing-list-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.writing-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.925rem;
+}
+
+.writing-table th {
+  background: var(--bg-main);
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.writing-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.writing-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.writing-table tbody tr:hover {
+  background: rgba(248, 250, 252, 0.6);
+}
+
+/* Badge va Katakchalar */
+.badge-id {
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.table-title-cell .main-title {
+  font-weight: 600;
+  color: var(--text-main);
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.table-title-cell .sub-prompt {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* Rasm havolasi */
+.table-img-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.6rem;
+  background: var(--primary-light);
+  border-radius: 6px;
+  transition: var(--transition);
+}
+
+.table-img-link:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.no-img-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* O'chirish tugmasi */
+.btn-delete-row {
+  background: var(--danger-light);
+  color: var(--danger);
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-delete-row:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* Loading va Bo'sh holat */
+.writing-loading,
+.writing-empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+}
+
+.writing-loading .spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Formalar va Inputlar (AddWriting uchun) */
+.writing-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+.writing-card-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.form-grid-two {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.writing-input-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.writing-field-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.writing-field-wrapper input,
+.writing-form textarea {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.85rem;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  transition: var(--transition);
+  outline: none;
+}
+
+.writing-field-wrapper input {
+  padding-left: 2.5rem;
+}
+
+.writing-form textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+}
+
+.writing-field-wrapper input:focus,
+.writing-form textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.textarea-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.word-counter {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--bg-main);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Fayl yuklash (Dropzone) */
+.image-upload-dropzone {
+  border: 2px dashed var(--border-color);
+  background: var(--bg-main);
+  padding: 1.5rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+
+.image-upload-dropzone:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.image-upload-dropzone.has-file {
+  border-color: var(--success);
+  background: rgba(16, 185, 129, 0.05);
+  color: var(--success);
+}
+
+.upload-icon {
+  color: var(--text-muted);
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+/* Rasm oldindan ko'rish qismi */
+.image-preview-box {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.btn-remove-preview {
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.btn-remove-preview:hover {
+  text-decoration: underline;
+}
+
+.preview-image-wrapper {
+  max-height: 250px;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+  background: #000;
+}
+
+.img-fluid-preview {
+  max-width: 100%;
+  object-fit: contain;
+  max-height: 250px;
+}
+
+/* Xatolik xabarlari */
+.error-msg {
+  color: var(--danger);
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+  display: block;
+}
+
+/* Saqlash tugmasi */
+.btn-save-writing {
+  background: var(--success);
+  color: #fff;
+  border: none;
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.btn-save-writing:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-save-writing:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
