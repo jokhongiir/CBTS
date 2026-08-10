@@ -706,7 +706,7 @@ const AllResults = () => {
         {finalDisplayList.length === 0 ? (
           <div className="empty-results-state">
             <AlertCircle size={48} />
-            <h3>No examination results found</h3>
+            <h3>No examination results found.</h3>
             <p>Try modifying your search criteria or filter options.</p>
           </div>
         ) : (
