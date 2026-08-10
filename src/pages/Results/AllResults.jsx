@@ -16,6 +16,9 @@ import {
   Award,
   Save,
   Mic,
+  CheckCircle,
+  XCircle,
+  MinusCircle,
 } from "lucide-react";
 import "./Results.css";
 
@@ -50,9 +53,9 @@ const AllResults = () => {
     const avg = sum / scores.length;
     const decimal = avg - Math.floor(avg);
 
-    if (decimal < 0.25) return (Math.floor(avg)).toFixed(1);
+    if (decimal < 0.25) return Math.floor(avg).toFixed(1);
     if (decimal < 0.75) return (Math.floor(avg) + 0.5).toFixed(1);
-    return (Math.ceil(avg)).toFixed(1);
+    return Math.ceil(avg).toFixed(1);
   };
 
   useEffect(() => {
@@ -106,7 +109,6 @@ const AllResults = () => {
 
       toast.success("Band scores updated successfully!");
 
-      // Update local state
       const updatedItem = { ...selectedResult, ...payload };
       setSelectedResult(updatedItem);
       setResults((prev) =>
@@ -350,7 +352,7 @@ const AllResults = () => {
         );
         const isCorrect = check.status === "correct";
         const isNeutral = check.status === "neutral";
-        
+
         listeningRowsHtml += `
           <tr style="background-color: ${isNeutral ? '#f8fafc' : isCorrect ? '#ffffff' : '#fffdfd'};">
             <td style="padding: 12px 18px; font-weight: 700; color: #64748b; border-bottom: 1px solid #f8fafc;">#${i}</td>
@@ -472,30 +474,14 @@ const AllResults = () => {
       <p>Candidate: <strong>${item.student_display_name}</strong> &bull; Email: ${item.students?.email || "N/A"}</p>
     </div>
 
-    <!-- OVERALL & MODULE BAND SCORES HEADER -->
     <div class="overall-banner">
       <div class="overall-title">🏆 Official Band Scores</div>
       <div class="scores-wrapper">
-        <div class="score-chip">
-          <div class="lbl">Listening</div>
-          <div class="val">${lBand}</div>
-        </div>
-        <div class="score-chip">
-          <div class="lbl">Reading</div>
-          <div class="val">${rBand}</div>
-        </div>
-        <div class="score-chip">
-          <div class="lbl">Writing</div>
-          <div class="val">${wBand}</div>
-        </div>
-        <div class="score-chip">
-          <div class="lbl">Speaking</div>
-          <div class="val">${sBand}</div>
-        </div>
-        <div class="score-chip main-overall">
-          <div class="lbl">OVERALL</div>
-          <div class="val">${ovBand}</div>
-        </div>
+        <div class="score-chip"><div class="lbl">Listening</div><div class="val">${lBand}</div></div>
+        <div class="score-chip"><div class="lbl">Reading</div><div class="val">${rBand}</div></div>
+        <div class="score-chip"><div class="lbl">Writing</div><div class="val">${wBand}</div></div>
+        <div class="score-chip"><div class="lbl">Speaking</div><div class="val">${sBand}</div></div>
+        <div class="score-chip main-overall"><div class="lbl">OVERALL</div><div class="val">${ovBand}</div></div>
       </div>
     </div>
 
@@ -641,11 +627,77 @@ const AllResults = () => {
     });
   };
 
+  // Helper Function: Render Modal Answer Tables (1 - 40 questions)
+  const renderModuleAnswersTable = (examType, examId, answersObj, isCompleted) => {
+    if (!isCompleted) {
+      return (
+        <div className="no-module-data-banner">
+          <AlertCircle size={18} /> Candidate did not submit this module.
+        </div>
+      );
+    }
+
+    const rows = [];
+    for (let i = 1; i <= 40; i++) {
+      const studentAns = getSafeAnswer(answersObj, i);
+      const check = checkAnswerStatus(examType, examId, i, studentAns);
+
+      rows.push(
+        <tr key={i} className={`answer-row ${check.status}`}>
+          <td className="q-num">#{i}</td>
+          <td className="q-user-ans">
+            <span className="user-text">{studentAns}</span>
+          </td>
+          <td className="q-correct-ans">
+            {check.status === "correct" ? (
+              <span className="text-muted">—</span>
+            ) : (
+              <span className="correct-text">{check.correct || "N/A"}</span>
+            )}
+          </td>
+          <td className="q-status">
+            {check.status === "correct" && (
+              <span className="status-pill status-correct">
+                <CheckCircle size={14} /> To'g'ri
+              </span>
+            )}
+            {check.status === "incorrect" && (
+              <span className="status-pill status-incorrect">
+                <XCircle size={14} /> Xato
+              </span>
+            )}
+            {check.status === "neutral" && (
+              <span className="status-pill status-neutral">
+                <MinusCircle size={14} /> N/A
+              </span>
+            )}
+          </td>
+        </tr>
+      );
+    }
+
+    return (
+      <div className="answers-table-wrapper">
+        <table className="answers-modal-table">
+          <thead>
+            <tr>
+              <th>№</th>
+              <th>Talabaning javobi</th>
+              <th>To'g'ri javob</th>
+              <th>Holati</th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="admin-results-loading">
         <RefreshCw className="spinner animate-spin" size={40} />
-        <p>Loading examination results...</p>
+        <p>Loading examination results....</p>
       </div>
     );
   }
@@ -797,17 +849,18 @@ const AllResults = () => {
                     <td>
                       <div className="action-buttons-group">
                         <button
-                          className="btn-view-details"
+                          className="btn-action btn-view"
                           onClick={() => setSelectedResult(item)}
+                          title="View & Evaluate"
                         >
-                          <Eye size={14} /> Audit / Grade
+                          <Eye size={16} /> View/Grade
                         </button>
                         <button
-                          className="btn-download-report"
+                          className="btn-action btn-download"
                           onClick={() => downloadStudentReportHTML(item)}
-                          title="Download Student HTML Report"
+                          title="Download Report HTML"
                         >
-                          <Download size={14} /> HTML
+                          <Download size={16} /> Report
                         </button>
                       </div>
                     </td>
@@ -819,58 +872,33 @@ const AllResults = () => {
         )}
       </div>
 
-      {/* DETAILED MODAL AUDIT & BAND SCORE EVALUATION WINDOW */}
+      {/* DETAILED EVALUATION & FULL ANSWERS MODAL */}
       {selectedResult && (
-        <div
-          className="result-details-modal-overlay"
-          onClick={() => setSelectedResult(null)}
-        >
-          <div
-            className="result-details-modal-card"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-header">
-              <div className="student-modal-title">
-                <h2>{selectedResult.student_display_name}</h2>
-                <p>
-                  {selectedResult.students?.email || "No email"} • Comprehensive
-                  Exam Audit & Band Scoring
-                </p>
+        <div className="result-modal-backdrop">
+          <div className="result-modal-content">
+            <div className="result-modal-header">
+              <div>
+                <h2>{selectedResult.student_display_name}'s Evaluation</h2>
+                <p>{selectedResult.students?.email || "No email"}</p>
               </div>
-              <div className="modal-header-actions">
-                <button
-                  className="btn-download-modal"
-                  onClick={() => downloadStudentReportHTML(selectedResult)}
-                >
-                  <Download size={16} /> Download HTML Report
-                </button>
-                <button
-                  className="btn-close-modal"
-                  onClick={() => setSelectedResult(null)}
-                >
-                  <X size={20} />
-                </button>
-              </div>
+              <button
+                className="btn-close-modal"
+                onClick={() => setSelectedResult(null)}
+              >
+                <X size={20} />
+              </button>
             </div>
 
-            <div className="modal-body-scrollable">
-              {/* ADMIN BAND SCORE ASSIGNMENT SECTION */}
-              <div className="band-scoring-admin-panel" style={{
-                background: "#f0fdf4",
-                border: "1px solid #bbf7d0",
-                borderRadius: "12px",
-                padding: "20px",
-                marginBottom: "25px"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "15px" }}>
-                  <Award size={22} color="#15803d" />
-                  <h3 style={{ margin: 0, color: "#166534", fontSize: "17px" }}>Admin Official Band Score Evaluation</h3>
-                </div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "15px", alignItems: "center" }}>
-                  <div>
-                    <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "#166534", marginBottom: "5px" }}>
-                      🎧 Listening
+            <div className="result-modal-body">
+              {/* 1. OFFICIAL BAND SCORE MANAGEMENT */}
+              <div className="band-score-management-card">
+                <h3>
+                  <Award size={18} /> Official IELTS Band Score Evaluation
+                </h3>
+                <div className="band-inputs-grid">
+                  <div className="input-group">
+                    <label>
+                      <Headphones size={14} /> Listening
                     </label>
                     <input
                       type="number"
@@ -879,14 +907,14 @@ const AllResults = () => {
                       max="9"
                       placeholder="e.g. 6.5"
                       value={adminScores.listening}
-                      onChange={(e) => handleScoreChange("listening", e.target.value)}
-                      style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #86efac", fontWeight: "600" }}
+                      onChange={(e) =>
+                        handleScoreChange("listening", e.target.value)
+                      }
                     />
                   </div>
-
-                  <div>
-                    <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "#166534", marginBottom: "5px" }}>
-                      📖 Reading
+                  <div className="input-group">
+                    <label>
+                      <BookOpen size={14} /> Reading
                     </label>
                     <input
                       type="number"
@@ -895,14 +923,14 @@ const AllResults = () => {
                       max="9"
                       placeholder="e.g. 7.0"
                       value={adminScores.reading}
-                      onChange={(e) => handleScoreChange("reading", e.target.value)}
-                      style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #86efac", fontWeight: "600" }}
+                      onChange={(e) =>
+                        handleScoreChange("reading", e.target.value)
+                      }
                     />
                   </div>
-
-                  <div>
-                    <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "#166534", marginBottom: "5px" }}>
-                      ✍️ Writing
+                  <div className="input-group">
+                    <label>
+                      <PenTool size={14} /> Writing
                     </label>
                     <input
                       type="number"
@@ -911,14 +939,14 @@ const AllResults = () => {
                       max="9"
                       placeholder="e.g. 6.0"
                       value={adminScores.writing}
-                      onChange={(e) => handleScoreChange("writing", e.target.value)}
-                      style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #86efac", fontWeight: "600" }}
+                      onChange={(e) =>
+                        handleScoreChange("writing", e.target.value)
+                      }
                     />
                   </div>
-
-                  <div>
-                    <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "#166534", marginBottom: "5px" }}>
-                      🗣️ Speaking
+                  <div className="input-group">
+                    <label>
+                      <Mic size={14} /> Speaking
                     </label>
                     <input
                       type="number"
@@ -927,14 +955,14 @@ const AllResults = () => {
                       max="9"
                       placeholder="e.g. 6.5"
                       value={adminScores.speaking}
-                      onChange={(e) => handleScoreChange("speaking", e.target.value)}
-                      style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #86efac", fontWeight: "600" }}
+                      onChange={(e) =>
+                        handleScoreChange("speaking", e.target.value)
+                      }
                     />
                   </div>
-
-                  <div>
-                    <label style={{ display: "block", fontSize: "12px", fontWeight: "800", color: "#15803d", marginBottom: "5px" }}>
-                      🏆 OVERALL
+                  <div className="input-group overall-highlight">
+                    <label>
+                      <Award size={14} /> Overall Band
                     </label>
                     <input
                       type="number"
@@ -943,122 +971,119 @@ const AllResults = () => {
                       max="9"
                       placeholder="Auto"
                       value={adminScores.overall}
-                      onChange={(e) => setAdminScores({ ...adminScores, overall: e.target.value })}
-                      style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "2px solid #16a34a", background: "#dcfce7", fontWeight: "800", color: "#14532d" }}
+                      onChange={(e) =>
+                        setAdminScores({ ...adminScores, overall: e.target.value })
+                      }
                     />
                   </div>
-
-                  <div style={{ marginTop: "18px" }}>
-                    <button
-                      onClick={handleSaveBandScores}
-                      disabled={isSavingScores}
-                      style={{
-                        width: "100%",
-                        padding: "10px 16px",
-                        background: "#16a34a",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "8px",
-                        fontWeight: "700",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px"
-                      }}
-                    >
-                      <Save size={16} /> {isSavingScores ? "Saving..." : "Save Scores"}
-                    </button>
-                  </div>
                 </div>
+                <button
+                  className="btn-save-scores"
+                  onClick={handleSaveBandScores}
+                  disabled={isSavingScores}
+                >
+                  {isSavingScores ? (
+                    <RefreshCw className="spinner animate-spin" size={16} />
+                  ) : (
+                    <Save size={16} />
+                  )}
+                  Save Scores
+                </button>
               </div>
 
-              {/* 1. LISTENING MODULE TABLE */}
-              <div className="detail-section-block">
-                <div className="section-block-title listening-theme">
-                  <Headphones size={20} />
-                  <h3>Listening Module Analysis (1 - 40 Questions)</h3>
-                  {selectedResult.listening_completed && (
-                    <span className="score-badge-right">
-                      Score:{" "}
-                      {calculateRealScore(
-                        "listening",
-                        selectedResult.listening_exam_id,
-                        selectedResult.listening_answers,
-                        selectedResult.listening_score
-                      )}{" "}
-                      / 40
-                    </span>
-                  )}
+              {/* 2. LISTENING ANSWERS (1-40) */}
+              <div className="modal-section">
+                <div className="modal-section-header">
+                  <h3>
+                    <Headphones size={18} /> Listening Answers (1 - 40)
+                  </h3>
+                  <span className="score-summary-pill">
+                    Score:{" "}
+                    {calculateRealScore(
+                      "listening",
+                      selectedResult.listening_exam_id,
+                      selectedResult.listening_answers,
+                      selectedResult.listening_score
+                    )}{" "}
+                    / 40
+                  </span>
                 </div>
-                {selectedResult.listening_completed &&
-                selectedResult.listening_answers ? (
-                  <div className="answers-table-container">
-                    <table className="answers-detail-table">
-                      <thead>
-                        <tr>
-                          <th>№ Savol</th>
-                          <th>Talabaning javobi</th>
-                          <th>To'g'ri javob</th>
-                          <th className="status-cell">Holati</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Array.from({ length: 40 }, (_, i) => {
-                          const qNum = i + 1;
-                          const studentAns = getSafeAnswer(
-                            selectedResult.listening_answers,
-                            qNum
-                          );
-                          const check = checkAnswerStatus(
-                            "listening",
-                            selectedResult.listening_exam_id,
-                            qNum,
-                            studentAns
-                          );
-
-                          const isCorrect = check.status === "correct";
-                          const isNeutral = check.status === "neutral";
-                          const rowClass = isNeutral
-                            ? "row-neutral"
-                            : isCorrect
-                              ? "row-correct"
-                              : "row-incorrect";
-
-                          return (
-                            <tr key={qNum} className={rowClass}>
-                              <td className="q-num-cell">#{qNum}</td>
-                              <td className="student-ans-cell">{studentAns}</td>
-                              <td className="correct-ans-cell">
-                                {isCorrect ? (
-                                  "—"
-                                ) : (
-                                  <span className="correct-badge-pill">
-                                    {check.correct || "N/A"}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="status-cell">
-                                <span className={`status-pill ${check.status}`}>
-                                  {isNeutral
-                                    ? "N/A"
-                                    : isCorrect
-                                      ? "✓ To'g'ri"
-                                      : "✕ Xato"}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="no-module-data">
-                    Student did not submit Listening exam module.
-                  </p>
+                {renderModuleAnswersTable(
+                  "listening",
+                  selectedResult.listening_exam_id,
+                  selectedResult.listening_answers,
+                  selectedResult.listening_completed
                 )}
               </div>
+
+              {/* 3. READING ANSWERS (1-40) */}
+              <div className="modal-section">
+                <div className="modal-section-header">
+                  <h3>
+                    <BookOpen size={18} /> Reading Answers (1 - 40)
+                  </h3>
+                  <span className="score-summary-pill">
+                    Score:{" "}
+                    {calculateRealScore(
+                      "reading",
+                      selectedResult.reading_exam_id,
+                      selectedResult.reading_answers,
+                      selectedResult.reading_score
+                    )}{" "}
+                    / 40
+                  </span>
+                </div>
+                {renderModuleAnswersTable(
+                  "reading",
+                  selectedResult.reading_exam_id,
+                  selectedResult.reading_answers,
+                  selectedResult.reading_completed
+                )}
+              </div>
+
+              {/* 4. WRITING SUBMISSIONS */}
+              <div className="modal-section">
+                <div className="modal-section-header">
+                  <h3>
+                    <PenTool size={18} /> Writing Submissions
+                  </h3>
+                </div>
+                {selectedResult.writing_completed ? (
+                  <div className="essays-grid">
+                    <div className="essay-view-card">
+                      <h4>Task 1 Response</h4>
+                      <p className="essay-text">
+                        {selectedResult.writing_answer || "No response provided."}
+                      </p>
+                    </div>
+                    <div className="essay-view-card">
+                      <h4>Task 2 Essay</h4>
+                      <p className="essay-text">
+                        {selectedResult.writing_task2_answer || "No response provided."}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="no-module-data-banner">
+                    <AlertCircle size={18} /> Candidate did not submit Writing.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="result-modal-footer">
+              <button
+                className="btn-secondary"
+                onClick={() => setSelectedResult(null)}
+              >
+                Close
+              </button>
+              <button
+                className="btn-primary"
+                onClick={() => downloadStudentReportHTML(selectedResult)}
+              >
+                <Download size={16} /> Download HTML Report
+              </button>
             </div>
           </div>
         </div>
