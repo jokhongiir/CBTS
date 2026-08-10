@@ -13,6 +13,9 @@ import {
   Eye,
   AlertCircle,
   Download,
+  Award,
+  Save,
+  Mic,
 } from "lucide-react";
 import "./Results.css";
 
@@ -23,8 +26,99 @@ const AllResults = () => {
   const [filterSection, setFilterSection] = useState("all");
   const [selectedResult, setSelectedResult] = useState(null);
 
+  // Score Management States for Admin
+  const [adminScores, setAdminScores] = useState({
+    listening: "",
+    reading: "",
+    writing: "",
+    speaking: "",
+    overall: "",
+  });
+  const [isSavingScores, setIsSavingScores] = useState(false);
+
   const [listeningExamsMap, setListeningExamsMap] = useState(new Map());
   const [readingExamsMap, setReadingExamsMap] = useState(new Map());
+
+  // IELTS Rounding Rule (e.g. 6.25 -> 6.5, 6.75 -> 7.0, 6.125 -> 6.0)
+  const calculateIELTSOverall = (l, r, w, s) => {
+    const scores = [parseFloat(l), parseFloat(r), parseFloat(w), parseFloat(s)].filter(
+      (val) => !isNaN(val) && val >= 0
+    );
+    if (scores.length === 0) return "";
+
+    const sum = scores.reduce((acc, curr) => acc + curr, 0);
+    const avg = sum / scores.length;
+    const decimal = avg - Math.floor(avg);
+
+    if (decimal < 0.25) return (Math.floor(avg)).toFixed(1);
+    if (decimal < 0.75) return (Math.floor(avg) + 0.5).toFixed(1);
+    return (Math.ceil(avg)).toFixed(1);
+  };
+
+  useEffect(() => {
+    if (selectedResult) {
+      const l = selectedResult.listening_band_score ?? "";
+      const r = selectedResult.reading_band_score ?? "";
+      const w = selectedResult.writing_band_score ?? "";
+      const s = selectedResult.speaking_band_score ?? "";
+      const ov = selectedResult.overall_band_score ?? calculateIELTSOverall(l, r, w, s);
+
+      setAdminScores({
+        listening: l,
+        reading: r,
+        writing: w,
+        speaking: s,
+        overall: ov,
+      });
+    }
+  }, [selectedResult]);
+
+  const handleScoreChange = (field, value) => {
+    const updated = { ...adminScores, [field]: value };
+    const autoOverall = calculateIELTSOverall(
+      updated.listening,
+      updated.reading,
+      updated.writing,
+      updated.speaking
+    );
+    updated.overall = autoOverall;
+    setAdminScores(updated);
+  };
+
+  const handleSaveBandScores = async () => {
+    if (!selectedResult) return;
+    try {
+      setIsSavingScores(true);
+      const payload = {
+        listening_band_score: adminScores.listening ? parseFloat(adminScores.listening) : null,
+        reading_band_score: adminScores.reading ? parseFloat(adminScores.reading) : null,
+        writing_band_score: adminScores.writing ? parseFloat(adminScores.writing) : null,
+        speaking_band_score: adminScores.speaking ? parseFloat(adminScores.speaking) : null,
+        overall_band_score: adminScores.overall ? parseFloat(adminScores.overall) : null,
+      };
+
+      const { error } = await supabase
+        .from("student_results")
+        .update(payload)
+        .eq("id", selectedResult.id);
+
+      if (error) throw error;
+
+      toast.success("Band scores updated successfully!");
+
+      // Update local state
+      const updatedItem = { ...selectedResult, ...payload };
+      setSelectedResult(updatedItem);
+      setResults((prev) =>
+        prev.map((item) => (item.id === selectedResult.id ? updatedItem : item))
+      );
+    } catch (err) {
+      console.error("Save band scores error:", err);
+      toast.error(`Failed to save scores: ${err.message}`);
+    } finally {
+      setIsSavingScores(false);
+    }
+  };
 
   const fetchAllResults = async () => {
     try {
@@ -238,6 +332,12 @@ const AllResults = () => {
       item.reading_score
     );
 
+    const lBand = item.listening_band_score ?? "N/A";
+    const rBand = item.reading_band_score ?? "N/A";
+    const wBand = item.writing_band_score ?? "N/A";
+    const sBand = item.speaking_band_score ?? "N/A";
+    const ovBand = item.overall_band_score ?? "N/A";
+
     let listeningRowsHtml = "";
     if (item.listening_completed && item.listening_answers) {
       for (let i = 1; i <= 40; i++) {
@@ -341,6 +441,17 @@ const AllResults = () => {
     .badge-academy { display: inline-block; background: rgba(255, 255, 255, 0.15); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.2); }
     .header h1 { margin: 0 0 6px 0; font-size: 24px; font-weight: 800; }
     .header p { margin: 0; opacity: 0.9; font-size: 14px; }
+    
+    .overall-banner { background: #EEF2FF; border-bottom: 1px solid #C7D2FE; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
+    .overall-title { font-size: 16px; font-weight: 800; color: #3730A3; text-transform: uppercase; letter-spacing: 0.5px; }
+    .scores-wrapper { display: flex; gap: 15px; }
+    .score-chip { background: white; padding: 10px 16px; border-radius: 10px; border: 1px solid #C7D2FE; text-align: center; }
+    .score-chip .lbl { font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; margin-bottom: 2px; }
+    .score-chip .val { font-size: 18px; font-weight: 800; color: #1E1B4B; }
+    .score-chip.main-overall { background: #4F46E5; border-color: #4338CA; }
+    .score-chip.main-overall .lbl { color: #E0E7FF; }
+    .score-chip.main-overall .val { color: #FFFFFF; font-size: 22px; }
+
     .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 25px 40px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
     .summary-card { background: white; padding: 18px 20px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; }
     .summary-card h4 { margin: 0 0 6px 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; }
@@ -360,6 +471,34 @@ const AllResults = () => {
       <h1>Candidate Exam Report</h1>
       <p>Candidate: <strong>${item.student_display_name}</strong> &bull; Email: ${item.students?.email || "N/A"}</p>
     </div>
+
+    <!-- OVERALL & MODULE BAND SCORES HEADER -->
+    <div class="overall-banner">
+      <div class="overall-title">🏆 Official Band Scores</div>
+      <div class="scores-wrapper">
+        <div class="score-chip">
+          <div class="lbl">Listening</div>
+          <div class="val">${lBand}</div>
+        </div>
+        <div class="score-chip">
+          <div class="lbl">Reading</div>
+          <div class="val">${rBand}</div>
+        </div>
+        <div class="score-chip">
+          <div class="lbl">Writing</div>
+          <div class="val">${wBand}</div>
+        </div>
+        <div class="score-chip">
+          <div class="lbl">Speaking</div>
+          <div class="val">${sBand}</div>
+        </div>
+        <div class="score-chip main-overall">
+          <div class="lbl">OVERALL</div>
+          <div class="val">${ovBand}</div>
+        </div>
+      </div>
+    </div>
+
     <div class="summary-grid">
       <div class="summary-card">
         <h4>Listening Score</h4>
@@ -517,8 +656,7 @@ const AllResults = () => {
         <div>
           <h1>Exam Results Dashboard</h1>
           <p>
-            Comprehensive performance analysis and module reports for all
-            candidates
+            Comprehensive performance analysis and module reports for all candidates
           </p>
         </div>
         <button onClick={fetchAllResults} className="btn-refresh">
@@ -588,6 +726,9 @@ const AllResults = () => {
                   <PenTool size={14} /> Writing
                 </th>
                 <th>
+                  <Award size={14} /> Band Score
+                </th>
+                <th>
                   <Calendar size={14} /> Last Activity
                 </th>
                 <th>Actions</th>
@@ -645,6 +786,13 @@ const AllResults = () => {
                         {item.writing_completed ? "Submitted" : "Not Submitted"}
                       </span>
                     </td>
+                    <td>
+                      <span className="overall-score-pill">
+                        {item.overall_band_score
+                          ? `Band ${item.overall_band_score}`
+                          : "Not Evaluated"}
+                      </span>
+                    </td>
                     <td>{formatDate(item.submitted_at)}</td>
                     <td>
                       <div className="action-buttons-group">
@@ -652,7 +800,7 @@ const AllResults = () => {
                           className="btn-view-details"
                           onClick={() => setSelectedResult(item)}
                         >
-                          <Eye size={14} /> Audit
+                          <Eye size={14} /> Audit / Grade
                         </button>
                         <button
                           className="btn-download-report"
@@ -671,7 +819,7 @@ const AllResults = () => {
         )}
       </div>
 
-      {/* DETAILED MODAL AUDIT WINDOW WITH TABLES */}
+      {/* DETAILED MODAL AUDIT & BAND SCORE EVALUATION WINDOW */}
       {selectedResult && (
         <div
           className="result-details-modal-overlay"
@@ -686,7 +834,7 @@ const AllResults = () => {
                 <h2>{selectedResult.student_display_name}</h2>
                 <p>
                   {selectedResult.students?.email || "No email"} • Comprehensive
-                  Exam Audit Report
+                  Exam Audit & Band Scoring
                 </p>
               </div>
               <div className="modal-header-actions">
@@ -706,6 +854,125 @@ const AllResults = () => {
             </div>
 
             <div className="modal-body-scrollable">
+              {/* ADMIN BAND SCORE ASSIGNMENT SECTION */}
+              <div className="band-scoring-admin-panel" style={{
+                background: "#f0fdf4",
+                border: "1px solid #bbf7d0",
+                borderRadius: "12px",
+                padding: "20px",
+                marginBottom: "25px"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "15px" }}>
+                  <Award size={22} color="#15803d" />
+                  <h3 style={{ margin: 0, color: "#166534", fontSize: "17px" }}>Admin Official Band Score Evaluation</h3>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "15px", alignItems: "center" }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "#166534", marginBottom: "5px" }}>
+                      🎧 Listening
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      max="9"
+                      placeholder="e.g. 6.5"
+                      value={adminScores.listening}
+                      onChange={(e) => handleScoreChange("listening", e.target.value)}
+                      style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #86efac", fontWeight: "600" }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "#166534", marginBottom: "5px" }}>
+                      📖 Reading
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      max="9"
+                      placeholder="e.g. 7.0"
+                      value={adminScores.reading}
+                      onChange={(e) => handleScoreChange("reading", e.target.value)}
+                      style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #86efac", fontWeight: "600" }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "#166534", marginBottom: "5px" }}>
+                      ✍️ Writing
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      max="9"
+                      placeholder="e.g. 6.0"
+                      value={adminScores.writing}
+                      onChange={(e) => handleScoreChange("writing", e.target.value)}
+                      style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #86efac", fontWeight: "600" }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "#166534", marginBottom: "5px" }}>
+                      🗣️ Speaking
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      max="9"
+                      placeholder="e.g. 6.5"
+                      value={adminScores.speaking}
+                      onChange={(e) => handleScoreChange("speaking", e.target.value)}
+                      style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #86efac", fontWeight: "600" }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: "800", color: "#15803d", marginBottom: "5px" }}>
+                      🏆 OVERALL
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      max="9"
+                      placeholder="Auto"
+                      value={adminScores.overall}
+                      onChange={(e) => setAdminScores({ ...adminScores, overall: e.target.value })}
+                      style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "2px solid #16a34a", background: "#dcfce7", fontWeight: "800", color: "#14532d" }}
+                    />
+                  </div>
+
+                  <div style={{ marginTop: "18px" }}>
+                    <button
+                      onClick={handleSaveBandScores}
+                      disabled={isSavingScores}
+                      style={{
+                        width: "100%",
+                        padding: "10px 16px",
+                        background: "#16a34a",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "8px",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px"
+                      }}
+                    >
+                      <Save size={16} /> {isSavingScores ? "Saving..." : "Save Scores"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* 1. LISTENING MODULE TABLE */}
               <div className="detail-section-block">
                 <div className="section-block-title listening-theme">
@@ -772,9 +1039,7 @@ const AllResults = () => {
                                 )}
                               </td>
                               <td className="status-cell">
-                                <span
-                                  className={`status-chip-badge ${check.status}`}
-                                >
+                                <span className={`status-pill ${check.status}`}>
                                   {isNeutral
                                     ? "N/A"
                                     : isCorrect
@@ -789,146 +1054,8 @@ const AllResults = () => {
                     </table>
                   </div>
                 ) : (
-                  <p className="module-not-submitted">
-                    Candidate did not submit the Listening module.
-                  </p>
-                )}
-              </div>
-
-              {/* 2. READING MODULE TABLE */}
-              <div className="detail-section-block">
-                <div className="section-block-title reading-theme">
-                  <BookOpen size={20} />
-                  <h3>Reading Module Analysis (1 - 40 Questions)</h3>
-                  {selectedResult.reading_completed && (
-                    <span className="score-badge-right">
-                      Score:{" "}
-                      {calculateRealScore(
-                        "reading",
-                        selectedResult.reading_exam_id,
-                        selectedResult.reading_answers,
-                        selectedResult.reading_score
-                      )}{" "}
-                      / 40
-                    </span>
-                  )}
-                </div>
-                {selectedResult.reading_completed &&
-                selectedResult.reading_answers ? (
-                  <div className="answers-table-container">
-                    <table className="answers-detail-table">
-                      <thead>
-                        <tr>
-                          <th>№ Savol</th>
-                          <th>Talabaning javobi</th>
-                          <th>To'g'ri javob</th>
-                          <th className="status-cell">Holati</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Array.from({ length: 40 }, (_, i) => {
-                          const qNum = i + 1;
-                          const studentAns = getSafeAnswer(
-                            selectedResult.reading_answers,
-                            qNum
-                          );
-                          const check = checkAnswerStatus(
-                            "reading",
-                            selectedResult.reading_exam_id,
-                            qNum,
-                            studentAns
-                          );
-
-                          const isCorrect = check.status === "correct";
-                          const isNeutral = check.status === "neutral";
-                          const rowClass = isNeutral
-                            ? "row-neutral"
-                            : isCorrect
-                              ? "row-correct"
-                              : "row-incorrect";
-
-                          return (
-                            <tr key={qNum} className={rowClass}>
-                              <td className="q-num-cell">#{qNum}</td>
-                              <td className="student-ans-cell">{studentAns}</td>
-                              <td className="correct-ans-cell">
-                                {isCorrect ? (
-                                  "—"
-                                ) : (
-                                  <span className="correct-badge-pill">
-                                    {check.correct || "N/A"}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="status-cell">
-                                <span
-                                  className={`status-chip-badge ${check.status}`}
-                                >
-                                  {isNeutral
-                                    ? "N/A"
-                                    : isCorrect
-                                      ? "✓ To'g'ri"
-                                      : "✕ Xato"}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="module-not-submitted">
-                    Candidate did not submit the Reading module.
-                  </p>
-                )}
-              </div>
-
-              {/* 3. WRITING MODULE ESSAYS */}
-              <div className="detail-section-block">
-                <div className="section-block-title writing-theme">
-                  <PenTool size={20} />
-                  <h3>Writing Module Responses</h3>
-                </div>
-                {selectedResult.writing_completed ? (
-                  <div className="writing-essays-grid">
-                    <div className="essay-card-box">
-                      <div className="essay-card-header">
-                        <h4>Task 1 Response</h4>
-                        <span className="word-count-badge">
-                          Words:{" "}
-                          {(selectedResult.writing_answer || "")
-                            .trim()
-                            .split(/\s+/)
-                            .filter(Boolean).length}
-                        </span>
-                      </div>
-                      <div className="essay-content-box">
-                        {selectedResult.writing_answer ||
-                          "No text provided for Task 1."}
-                      </div>
-                    </div>
-
-                    <div className="essay-card-box">
-                      <div className="essay-card-header">
-                        <h4>Task 2 Essay Response</h4>
-                        <span className="word-count-badge">
-                          Words:{" "}
-                          {(selectedResult.writing_task2_answer || "")
-                            .trim()
-                            .split(/\s+/)
-                            .filter(Boolean).length}
-                        </span>
-                      </div>
-                      <div className="essay-content-box">
-                        {selectedResult.writing_task2_answer ||
-                          "No text provided for Task 2."}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="module-not-submitted">
-                    Candidate did not submit the Writing module.
+                  <p className="no-module-data">
+                    Student did not submit Listening exam module.
                   </p>
                 )}
               </div>
