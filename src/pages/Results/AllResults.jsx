@@ -19,8 +19,16 @@ import {
   CheckCircle,
   XCircle,
   MinusCircle,
+  FileText,
+  FileDown,
 } from "lucide-react";
 import "./Results.css";
+
+// Optional: if you want real PDF generation, install:
+// npm install jspdf jspdf-autotable
+// Then uncomment the imports below and use the generatePDF function
+// import jsPDF from "jspdf";
+// import autoTable from "jspdf-autotable";
 
 const AllResults = () => {
   const [results, setResults] = useState([]);
@@ -29,7 +37,6 @@ const AllResults = () => {
   const [filterSection, setFilterSection] = useState("all");
   const [selectedResult, setSelectedResult] = useState(null);
 
-  // Score Management States for Admin
   const [adminScores, setAdminScores] = useState({
     listening: "",
     reading: "",
@@ -42,7 +49,7 @@ const AllResults = () => {
   const [listeningExamsMap, setListeningExamsMap] = useState(new Map());
   const [readingExamsMap, setReadingExamsMap] = useState(new Map());
 
-  // IELTS Rounding Rule (e.g. 6.25 -> 6.5, 6.75 -> 7.0, 6.125 -> 6.0)
+  // IELTS Rounding Rule
   const calculateIELTSOverall = (l, r, w, s) => {
     const scores = [parseFloat(l), parseFloat(r), parseFloat(w), parseFloat(s)].filter(
       (val) => !isNaN(val) && val >= 0
@@ -320,6 +327,7 @@ const AllResults = () => {
     return calculated;
   };
 
+  // ====================== HTML REPORT ======================
   const downloadStudentReportHTML = (item) => {
     const lScore = calculateRealScore(
       "listening",
@@ -435,6 +443,7 @@ const AllResults = () => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=1100">
   <title>Exam Report - ${item.student_display_name}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f1f5f9; color: #0f172a; margin: 0; padding: 30px; line-height: 1.5; }
@@ -567,9 +576,225 @@ const AllResults = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast.success(`Report downloaded for ${item.student_display_name}!`);
+    toast.success(`HTML Report downloaded for ${item.student_display_name}!`);
   };
 
+  // ====================== PDF REPORT (Professional) ======================
+  const downloadStudentReportPDF = async (item) => {
+    // Agar siz jspdf o'rnatgan bo'lsangiz quyidagi kodni ishlatishingiz mumkin.
+    // Hozircha eng oddiy va ishonchli usul: HTML reportni ochib, brauzerning Print → Save as PDF qilishini tavsiya qilamiz.
+    // Lekin to'liq avtomatik PDF kerak bo'lsa, quyidagi kutubxonalarni o'rnating:
+    // npm install jspdf jspdf-autotable
+
+    toast.loading("PDF tayyorlanmoqda...", { id: "pdf-toast" });
+
+    try {
+      // ========== VARIANT 1: jsPDF bilan (tavsiya etiladi) ==========
+      // Agar jspdf o'rnatilgan bo'lsa, quyidagi kommentni oching:
+
+      /*
+      const { default: jsPDF } = await import("jspdf");
+      const { default: autoTable } = await import("jspdf-autotable");
+
+      const doc = new jsPDF("p", "mm", "a4");
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let y = 20;
+
+      // Header
+      doc.setFillColor(79, 70, 229);
+      doc.rect(0, 0, pageWidth, 35, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.text("INTELLECT ACADEMY CBT PLATFORM", 14, 14);
+      doc.setFontSize(18);
+      doc.text("Candidate Exam Report", 14, 25);
+
+      // Student info
+      y = 45;
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text(`Candidate: ${item.student_display_name}`, 14, y);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(100, 116, 139);
+      doc.text(`Email: ${item.students?.email || "N/A"}`, 14, y + 6);
+
+      // Band Scores Box
+      y = 60;
+      doc.setFillColor(238, 242, 255);
+      doc.roundedRect(14, y, pageWidth - 28, 28, 3, 3, "F");
+      doc.setTextColor(55, 48, 163);
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.text("OFFICIAL BAND SCORES", 20, y + 9);
+
+      const bands = [
+        { label: "L", value: item.listening_band_score ?? "N/A" },
+        { label: "R", value: item.reading_band_score ?? "N/A" },
+        { label: "W", value: item.writing_band_score ?? "N/A" },
+        { label: "S", value: item.speaking_band_score ?? "N/A" },
+        { label: "Overall", value: item.overall_band_score ?? "N/A" },
+      ];
+
+      bands.forEach((b, i) => {
+        const x = 20 + i * 35;
+        doc.setFontSize(9);
+        doc.setTextColor(100, 116, 139);
+        doc.text(b.label, x, y + 18);
+        doc.setFontSize(13);
+        doc.setTextColor(30, 27, 75);
+        doc.setFont("helvetica", "bold");
+        doc.text(String(b.value), x, y + 24);
+      });
+
+      // Scores summary
+      y = 98;
+      const lScore = calculateRealScore("listening", item.listening_exam_id, item.listening_answers, item.listening_score);
+      const rScore = calculateRealScore("reading", item.reading_exam_id, item.reading_answers, item.reading_score);
+
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.setFont("helvetica", "bold");
+      doc.text(`Listening: ${item.listening_completed ? lScore + " / 40" : "Not Submitted"}`, 14, y);
+      doc.text(`Reading: ${item.reading_completed ? rScore + " / 40" : "Not Submitted"}`, 90, y);
+      doc.text(`Writing: ${item.writing_completed ? "Submitted" : "Not Submitted"}`, 160, y);
+
+      // Listening table
+      y = 110;
+      doc.setFontSize(13);
+      doc.setTextColor(79, 70, 229);
+      doc.text("Listening Module (1-40)", 14, y);
+
+      const listeningBody = [];
+      if (item.listening_completed && item.listening_answers) {
+        for (let i = 1; i <= 40; i++) {
+          const studentAns = getSafeAnswer(item.listening_answers, i);
+          const check = checkAnswerStatus("listening", item.listening_exam_id, i, studentAns);
+          listeningBody.push([
+            `#${i}`,
+            studentAns,
+            check.status === "correct" ? "—" : (check.correct || "N/A"),
+            check.status === "correct" ? "Correct" : check.status === "incorrect" ? "Incorrect" : "N/A",
+          ]);
+        }
+      }
+
+      autoTable(doc, {
+        startY: y + 5,
+        head: [["№", "Student Answer", "Correct Answer", "Status"]],
+        body: listeningBody.length ? listeningBody : [["", "No Listening submission", "", ""]],
+        theme: "striped",
+        headStyles: { fillColor: [79, 70, 229], textColor: 255, fontSize: 9 },
+        bodyStyles: { fontSize: 8 },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+        margin: { left: 14, right: 14 },
+      });
+
+      // Reading table
+      let finalY = doc.lastAutoTable.finalY + 12;
+      doc.setFontSize(13);
+      doc.setTextColor(79, 70, 229);
+      doc.text("Reading Module (1-40)", 14, finalY);
+
+      const readingBody = [];
+      if (item.reading_completed && item.reading_answers) {
+        for (let i = 1; i <= 40; i++) {
+          const studentAns = getSafeAnswer(item.reading_answers, i);
+          const check = checkAnswerStatus("reading", item.reading_exam_id, i, studentAns);
+          readingBody.push([
+            `#${i}`,
+            studentAns,
+            check.status === "correct" ? "—" : (check.correct || "N/A"),
+            check.status === "correct" ? "Correct" : check.status === "incorrect" ? "Incorrect" : "N/A",
+          ]);
+        }
+      }
+
+      autoTable(doc, {
+        startY: finalY + 5,
+        head: [["№", "Student Answer", "Correct Answer", "Status"]],
+        body: readingBody.length ? readingBody : [["", "No Reading submission", "", ""]],
+        theme: "striped",
+        headStyles: { fillColor: [79, 70, 229], textColor: 255, fontSize: 9 },
+        bodyStyles: { fontSize: 8 },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+        margin: { left: 14, right: 14 },
+      });
+
+      // Writing section
+      finalY = doc.lastAutoTable.finalY + 12;
+      if (finalY > 250) {
+        doc.addPage();
+        finalY = 20;
+      }
+
+      doc.setFontSize(13);
+      doc.setTextColor(79, 70, 229);
+      doc.text("Writing Module", 14, finalY);
+
+      if (item.writing_completed) {
+        doc.setFontSize(10);
+        doc.setTextColor(15, 23, 42);
+        doc.setFont("helvetica", "bold");
+        doc.text("Task 1:", 14, finalY + 8);
+        doc.setFont("helvetica", "normal");
+        const task1 = doc.splitTextToSize(item.writing_answer || "No response", pageWidth - 28);
+        doc.text(task1, 14, finalY + 14);
+
+        finalY = finalY + 14 + task1.length * 5 + 8;
+        if (finalY > 250) {
+          doc.addPage();
+          finalY = 20;
+        }
+
+        doc.setFont("helvetica", "bold");
+        doc.text("Task 2:", 14, finalY);
+        doc.setFont("helvetica", "normal");
+        const task2 = doc.splitTextToSize(item.writing_task2_answer || "No response", pageWidth - 28);
+        doc.text(task2, 14, finalY + 6);
+      } else {
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139);
+        doc.text("Candidate did not submit Writing module.", 14, finalY + 8);
+      }
+
+      // Footer
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text(
+          `Generated by Intellect Academy • ${new Date().toLocaleString()} • Page ${i}/${pageCount}`,
+          pageWidth / 2,
+          287,
+          { align: "center" }
+        );
+      }
+
+      const safeName = (item.student_display_name || "student").replace(/[^a-zA-Z0-9]/g, "_");
+      doc.save(`${safeName}_Exam_Report.pdf`);
+      toast.success(`PDF Report downloaded for ${item.student_display_name}!`, { id: "pdf-toast" });
+      */
+
+      // ========== VARIANT 2: HTML → Print to PDF (hozirgi ishlaydigan versiya) ==========
+      // jsPDF o'rnatmaguncha quyidagi usul ishlaydi:
+      // HTML reportni ochib, brauzer print dialogini ochamiz
+
+      downloadStudentReportHTML(item); // avval HTML yuklab oladi
+      toast.success(
+        "HTML report yuklandi. PDF uchun brauzerda ochib → Ctrl+P → 'Save as PDF' ni tanlang.",
+        { id: "pdf-toast", duration: 6000 }
+      );
+    } catch (err) {
+      console.error("PDF generation error:", err);
+      toast.error("PDF yaratishda xatolik yuz berdi", { id: "pdf-toast" });
+    }
+  };
+
+  // ====================== FILTER & GROUP ======================
   const filteredResults = results.filter((item) => {
     const studentName = (item.student_display_name || "").toLowerCase();
     const studentEmail = (item.students?.email || "").toLowerCase();
@@ -627,7 +852,6 @@ const AllResults = () => {
     });
   };
 
-  // Helper Function: Render Modal Answer Tables (1 - 40 questions)
   const renderModuleAnswersTable = (examType, examId, answersObj, isCompleted) => {
     if (!isCompleted) {
       return (
@@ -853,14 +1077,25 @@ const AllResults = () => {
                           onClick={() => setSelectedResult(item)}
                           title="View & Evaluate"
                         >
-                          <Eye size={16} /> View/Grade
+                          <Eye size={16} /> View
                         </button>
+
+                        {/* HTML Download */}
                         <button
                           className="btn-action btn-download"
                           onClick={() => downloadStudentReportHTML(item)}
-                          title="Download Report HTML"
+                          title="Download HTML Report"
                         >
-                          <Download size={16} /> Report
+                          <FileText size={16} /> HTML
+                        </button>
+
+                        {/* PDF Download */}
+                        <button
+                          className="btn-action btn-download-pdf"
+                          onClick={() => downloadStudentReportPDF(item)}
+                          title="Download PDF Report"
+                        >
+                          <FileDown size={16} /> PDF
                         </button>
                       </div>
                     </td>
@@ -872,7 +1107,7 @@ const AllResults = () => {
         )}
       </div>
 
-      {/* DETAILED EVALUATION & FULL ANSWERS MODAL */}
+      {/* DETAILED EVALUATION MODAL */}
       {selectedResult && (
         <div className="result-modal-backdrop">
           <div className="result-modal-content">
@@ -890,7 +1125,7 @@ const AllResults = () => {
             </div>
 
             <div className="result-modal-body">
-              {/* 1. OFFICIAL BAND SCORE MANAGEMENT */}
+              {/* Band Score Management */}
               <div className="band-score-management-card">
                 <h3>
                   <Award size={18} /> Official IELTS Band Score Evaluation
@@ -991,7 +1226,7 @@ const AllResults = () => {
                 </button>
               </div>
 
-              {/* 2. LISTENING ANSWERS (1-40) */}
+              {/* Listening */}
               <div className="modal-section">
                 <div className="modal-section-header">
                   <h3>
@@ -1016,7 +1251,7 @@ const AllResults = () => {
                 )}
               </div>
 
-              {/* 3. READING ANSWERS (1-40) */}
+              {/* Reading */}
               <div className="modal-section">
                 <div className="modal-section-header">
                   <h3>
@@ -1041,7 +1276,7 @@ const AllResults = () => {
                 )}
               </div>
 
-              {/* 4. WRITING SUBMISSIONS */}
+              {/* Writing */}
               <div className="modal-section">
                 <div className="modal-section-header">
                   <h3>
@@ -1078,12 +1313,22 @@ const AllResults = () => {
               >
                 Close
               </button>
-              <button
-                className="btn-primary"
-                onClick={() => downloadStudentReportHTML(selectedResult)}
-              >
-                <Download size={16} /> Download HTML Report
-              </button>
+
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  className="btn-primary"
+                  onClick={() => downloadStudentReportHTML(selectedResult)}
+                >
+                  <FileText size={16} /> Download HTML
+                </button>
+                <button
+                  className="btn-primary"
+                  style={{ background: "#0f766e" }}
+                  onClick={() => downloadStudentReportPDF(selectedResult)}
+                >
+                  <FileDown size={16} /> Download PDF
+                </button>
+              </div>
             </div>
           </div>
         </div>
