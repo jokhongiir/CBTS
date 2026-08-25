@@ -30,7 +30,7 @@ const Sidebar = ({ isModalOpen = false }) => {
     { path: '/admin/listening', name: 'Listening Questions', icon: <RiVolumeUpLine /> },
     { path: '/admin/reading', name: 'Reading Questions', icon: <RiBookOpenLine /> },
     { path: '/admin/writing', name: 'Writing Questions', icon: <RiPenNibLine /> },
-    { path: '/admin/settings', name: 'Settings', icon: <RiSettings4Line /> },
+    // { path: '/admin/settings', name: 'Settings', icon: <RiSettings4Line /> },
   ];
 
   const handleLogout = async () => {
