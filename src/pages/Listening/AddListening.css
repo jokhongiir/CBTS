@@ -4,8 +4,8 @@
 
 .add-listening-container {
   padding: 15px;
-  max-width: 1500px;
-  margin: 0 auto;
+  width: 100%;
+  /* margin: 0 auto; */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #1e293b;
   background-color: #f8fafc;

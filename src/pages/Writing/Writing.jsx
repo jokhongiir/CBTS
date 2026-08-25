@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabaseClient';
 import { toast } from 'react-hot-toast';
-import { Plus, Trash2, PenTool, Image as ImageIcon, ExternalLink, Search, Power } from 'lucide-react';
+import { Plus, Trash2, PenTool, Image as ImageIcon, ExternalLink, Search, Power, Edit3, Eye, Clock, Calendar, Loader2 } from 'lucide-react';
 import AddWriting from './AddWriting';
 import './Writing.css';
 
 const Writing = () => {
-  const [view, setView] = useState('list'); 
+  const [view, setView] = useState('list'); // 'list' | 'add' | 'edit'
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedExamId, setSelectedExamId] = useState(null);
 
   const fetchWritingExams = async () => {
     setLoading(true);
@@ -77,6 +78,16 @@ const Writing = () => {
     }
   };
 
+  const handleEdit = (id) => {
+    setSelectedExamId(id);
+    setView('edit');
+  };
+
+  const handleAddNew = () => {
+    setSelectedExamId(null);
+    setView('add');
+  };
+
   const filteredExams = exams.filter(ex => {
     const matchesSearch = ex.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           ex.task1_text?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -84,8 +95,14 @@ const Writing = () => {
     return matchesSearch;
   });
 
-  if (view === 'add') {
-    return <AddWriting onBack={() => setView('list')} onRefresh={fetchWritingExams} />;
+  if (view === 'add' || view === 'edit') {
+    return (
+      <AddWriting 
+        onBack={() => { setView('list'); setSelectedExamId(null); }} 
+        onRefresh={fetchWritingExams} 
+        editExamId={selectedExamId} 
+      />
+    );
   }
 
   return (
@@ -95,7 +112,7 @@ const Writing = () => {
           <h1>IELTS Writing Question Bank</h1>
           <p>Manage combined exam prompts, Task 1 & Task 2 modules, assets, and configurations.</p>
         </div>
-        <button onClick={() => setView('add')} className="btn-add-new-writing">
+        <button onClick={handleAddNew} className="btn-add-new-writing">
           <Plus size={18} />
           <span>Add New Exam (Task 1 & 2)</span>
         </button>
@@ -116,7 +133,7 @@ const Writing = () => {
 
       {loading ? (
         <div className="writing-loading">
-          <div className="spinner"></div>
+          <Loader2 size={24} className="spinner" style={{ animation: 'spin 1s linear infinite' }} />
           <p>Synchronizing with Cloud Database...</p>
         </div>
       ) : filteredExams.length === 0 ? (
@@ -129,30 +146,34 @@ const Writing = () => {
           <table className="writing-table">
             <thead>
               <tr>
-                <th style={{ width: '90px' }}>Exam ID</th>
+                <th style={{ width: '110px' }}>Exam ID</th>
                 <th>Title / Package</th>
                 <th style={{ textAlign: 'center' }}>Status</th>
                 <th>Task 1 Preview</th>
                 <th>Task 2 Preview</th>
                 <th>Visual Asset</th>
-                <th style={{ textAlign: 'right', width: '100px' }}>Actions</th>
+                <th style={{ textAlign: 'center', width: '120px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredExams.map((exam) => {
+              {filteredExams.map((exam, index) => {
+                const examDisplayNumber = exams.length - index;
                 const isActive = exam.is_active !== false;
 
                 return (
                   <tr key={exam.id} style={{ opacity: isActive ? 1 : 0.6, background: isActive ? 'transparent' : '#f8fafc' }}>
                     <td>
                       <span className="badge-id">
-                        W-{exam.id}
+                        W-{examDisplayNumber}
                       </span>
                     </td>
                     <td>
                       <div className="table-title-cell">
                         <span className="main-title" style={{ textDecoration: isActive ? 'none' : 'line-through' }}>{exam.title}</span>
-                        <span className="sub-prompt">Duration: {exam.duration || 60} mins</span>
+                        <span className="sub-prompt">
+                          <Clock size={11} style={{ display: 'inline', marginRight: '4px' }} />
+                          Duration: {exam.duration || 60} mins
+                        </span>
                       </div>
                     </td>
                     <td style={{ textAlign: 'center' }}>
@@ -180,14 +201,14 @@ const Writing = () => {
                     <td>
                       <div className="table-title-cell">
                         <span className="sub-prompt">
-                          {exam.task1_text ? `${exam.task1_text.substring(0, 50)}...` : 'N/A'}
+                          {exam.task1_text ? `${exam.task1_text.substring(0, 45)}...` : 'N/A'}
                         </span>
                       </div>
                     </td>
                     <td>
                       <div className="table-title-cell">
                         <span className="sub-prompt">
-                          {exam.task2_text ? `${exam.task2_text.substring(0, 50)}...` : 'N/A'}
+                          {exam.task2_text ? `${exam.task2_text.substring(0, 45)}...` : 'N/A'}
                         </span>
                       </div>
                     </td>
@@ -202,10 +223,25 @@ const Writing = () => {
                         <span className="no-img-text">Text Only</span>
                       )}
                     </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <button onClick={() => handleDelete(exam)} className="btn-delete-row" title="Delete Task">
-                        <Trash2 size={16} />
-                      </button>
+                    <td style={{ textAlign: 'center' }}>
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
+                        <button 
+                          onClick={() => handleEdit(exam.id)} 
+                          className="listening-action-btn edit" 
+                          style={{ background: '#e0f2fe', color: '#0369a1', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="Edit Task"
+                        >
+                          <Edit3 size={16} />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(exam)} 
+                          className="btn-delete-row" 
+                          style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="Delete Task"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
