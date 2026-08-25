@@ -14,7 +14,6 @@ const Students = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  // Tanlangan o'quvchilar ID larini saqlash uchun state
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
   const fetchInitialData = useCallback(async () => {
@@ -37,7 +36,7 @@ const Students = () => {
       setListeningExams(listeningRes.data || []);
       setReadingExams(readingRes.data || []);
       setWritingExams(writingRes.data || []);
-      setSelectedStudentIds([]); // Ma'lumot yangilanganda tanlovni tozalash
+      setSelectedStudentIds([]);
     } catch (error) {
       console.error("Error loading system data:", error.message);
       toast.error("Failed to load students and exam configurations");
@@ -50,7 +49,6 @@ const Students = () => {
     fetchInitialData();
   }, [fetchInitialData]);
 
-  // Bitta o'quvchini o'chirish
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to permanently delete this student record?")) return;
     
@@ -67,7 +65,6 @@ const Students = () => {
     }
   };
 
-  // Tanlangan barcha o'quvchilarni o'chirish (Bulk Delete)
   const handleBulkDelete = async () => {
     if (selectedStudentIds.length === 0) return;
     
@@ -91,7 +88,6 @@ const Students = () => {
     }
   };
 
-  // Hammasini belgilash yoki belgilashni bekor qilish (Select All)
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       const allFilteredIds = filteredStudents.map(student => student.id);
@@ -101,7 +97,6 @@ const Students = () => {
     }
   };
 
-  // Bitta qatorni belgilash
   const handleSelectOne = (id) => {
     setSelectedStudentIds(prev => 
       prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
@@ -135,44 +130,40 @@ const Students = () => {
   const isAllSelected = filteredStudents.length > 0 && filteredStudents.every(student => selectedStudentIds.includes(student.id));
 
   return (
-    <div className="admin-students-page animate-fade-in">
-      <header className="admin-page-header">
-        <div className="header-meta">
+    <div className="std-dashboard-container">
+      <header className="std-top-header">
+        <div className="std-title-box">
           <h1>Students Management</h1>
           <p>Manage candidate profiles, access keys, and control randomized exam module assignments.</p>
         </div>
-        <div className="header-actions">
-          <div className="total-students-counter">
+        <div className="std-top-actions">
+          <div className="std-count-badge">
             <Users size={18} />
             <span>Total Candidates: <strong>{students.length}</strong></span>
           </div>
-          <button className="btn-register-student" onClick={() => setIsModalOpen(true)}>
+          <button className="std-add-btn" onClick={() => setIsModalOpen(true)}>
             <UserPlus size={16} /> Register Student
           </button>
         </div>
       </header>
 
-      <main className="admin-full-content">
-        <div className="admin-card-box full-width-card">
-          <div className="table-top-controls">
-            <div className="card-box-header flex items-center gap-3">
-              <BookOpen size={18} className="icon-purple" />
+      <main className="std-main-section">
+        <div className="std-content-panel">
+          <div className="std-panel-toolbar">
+            <div className="std-toolbar-left">
+              <BookOpen size={18} className="std-icon-accent" />
               <h2>Registered Candidates</h2>
               
-              {/* Tanlanganlar bo'lsa o'chirish tugmasi chiqadi */}
               {selectedStudentIds.length > 0 && (
-                <button 
-                  onClick={handleBulkDelete}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition font-medium shadow-sm ml-4"
-                >
+                <button onClick={handleBulkDelete} className="std-delete-bulk-btn">
                   <Trash2 size={14} />
                   <span>Delete Selected ({selectedStudentIds.length})</span>
                 </button>
               )}
             </div>
             
-            <div className="admin-search-wrapper">
-              <Search size={14} className="search-lens" />
+            <div className="std-search-box">
+              <Search size={14} className="std-search-icon" />
               <input 
                 type="text" 
                 placeholder="Search by name or ST-code..." 
@@ -182,26 +173,26 @@ const Students = () => {
             </div>
           </div>
 
-          <div className="admin-table-container">
+          <div className="std-table-wrapper">
             {loading ? (
-              <div className="no-students-placeholder">
-                <Loader2 className="spinner animate-spin" size={24} />
+              <div className="std-state-box">
+                <Loader2 className="std-spinner-anim" size={24} />
                 <span>Fetching student database...</span>
               </div>
             ) : filteredStudents.length === 0 ? (
-              <div className="no-students-placeholder">
+              <div className="std-state-box">
                 <span>No matching student records found.</span>
               </div>
             ) : (
-              <table className="admin-flat-table">
+              <table className="std-data-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '40px', textAlign: 'center' }}>
+                    <th className="std-col-check">
                       <input 
                         type="checkbox" 
                         checked={isAllSelected}
                         onChange={handleSelectAll}
-                        style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                        className="std-checkbox-input"
                       />
                     </th>
                     <th>Student ID</th>
@@ -219,41 +210,41 @@ const Students = () => {
                     const isSelected = selectedStudentIds.includes(student.id);
                     
                     return (
-                      <tr key={student.id} className={isSelected ? 'bg-indigo-50/40' : ''}>
-                        <td style={{ textAlign: 'center' }}>
+                      <tr key={student.id} className={isSelected ? 'std-row-highlight' : ''}>
+                        <td className="std-col-check">
                           <input 
                             type="checkbox" 
                             checked={isSelected}
                             onChange={() => handleSelectOne(student.id)}
-                            style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                            className="std-checkbox-input"
                           />
                         </td>
                         <td>
-                          <span className="badge-id">{student.student_code || 'N/A'}</span>
+                          <span className="std-id-tag">{student.student_code || 'N/A'}</span>
                         </td>
-                        <td className="candidate-name">
+                        <td className="std-name-cell">
                           {student.full_name}
-                          <span className="candidate-date">
+                          <span className="std-date-sub">
                             <Calendar size={11} /> Registered: {formatDate(student.created_at)}
                           </span>
                         </td>
-                        <td className="phone-cell">{student.phone || 'N/A'}</td>
+                        <td className="std-phone-cell">{student.phone || 'N/A'}</td>
                         <td>
-                          <div className="exam-pills-row">
-                            <span className={`pill r-pill ${!student.assigned_reading_exam_id ? 'pill-na' : ''}`} title="Reading Module">
+                          <div className="std-modules-wrap">
+                            <span className={`std-module-badge std-badge-reading ${!student.assigned_reading_exam_id ? 'std-badge-empty' : ''}`} title="Reading Module">
                               {readingLabel}
                             </span>
-                            <span className={`pill l-pill ${!student.assigned_listening_exam_id ? 'pill-na' : ''}`} title="Listening Module">
+                            <span className={`std-module-badge std-badge-listening ${!student.assigned_listening_exam_id ? 'std-badge-empty' : ''}`} title="Listening Module">
                               {listeningLabel}
                             </span>
-                            <span className={`pill w-pill ${!student.assigned_writing_exam_id ? 'pill-na' : ''}`} title="Writing Module">
+                            <span className={`std-module-badge std-badge-writing ${!student.assigned_writing_exam_id ? 'std-badge-empty' : ''}`} title="Writing Module">
                               {writingLabel}
                             </span>
                           </div>
                         </td>
                         <td>
                           <button 
-                            className="row-action-delete" 
+                            className="std-row-delete-btn" 
                             onClick={() => handleDelete(student.id)} 
                             title="Remove student record"
                           >

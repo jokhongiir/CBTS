@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UserPlus, CheckCircle, Phone, X } from 'lucide-react';
 import { supabase } from '../../config/supabaseClient'; 
 import { toast } from 'react-hot-toast';
+import './CreateStudent.css';
 
 const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
   const [formData, setFormData] = useState({ fullName: '', phone: '' });
@@ -43,7 +44,6 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
       if (readingRes.error) throw readingRes.error;
       if (writingRes.error) throw writingRes.error;
 
-      // Faqatgina statusi o'chirilmagan (is_active !== false) savollarni filtrlash
       const activeListening = (listeningRes.data || []).filter(item => item.is_active !== false);
       const activeReading = (readingRes.data || []).filter(item => item.is_active !== false);
       const activeWriting = (writingRes.data || []).filter(item => item.is_active !== false);
@@ -106,24 +106,24 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
   };
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-container animate-scale-up" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close-btn" onClick={handleClose}>
+    <div className="cstd-overlay" onClick={handleClose}>
+      <div className="cstd-wrapper cstd-scale-anim" onClick={(e) => e.stopPropagation()}>
+        <button className="cstd-close-btn" onClick={handleClose}>
           <X size={20} />
         </button>
 
-        <div className="modal-header">
-          <UserPlus size={24} className="icon-blue" />
+        <div className="cstd-header">
+          <UserPlus size={24} className="cstd-icon-blue" />
           <div>
             <h2>Register New Student</h2>
-            <p className="modal-subheader">Fill details to auto-assign randomized CBT exam modules.</p>
+            <p className="cstd-subtitle">Fill details to auto-assign randomized CBT exam modules.</p>
           </div>
         </div>
         
         {!createdStudent ? (
-          <form onSubmit={handleSubmit} className="admin-styled-form">
-            <div className="form-input-group">
-              <label>Full Name <span className="req">*</span></label>
+          <form onSubmit={handleSubmit} className="cstd-form">
+            <div className="cstd-field-group">
+              <label>Full Name <span className="cstd-req">*</span></label>
               <input 
                 type="text" 
                 name="fullName"
@@ -134,10 +134,10 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
                 required 
               />
             </div>
-            <div className="form-input-group">
-              <label>Phone Number <span className="req">*</span></label>
-              <div className="input-with-icon">
-                <Phone size={14} className="field-inner-icon" />
+            <div className="cstd-field-group">
+              <label>Phone Number <span className="cstd-req">*</span></label>
+              <div className="cstd-input-icon-wrap">
+                <Phone size={14} className="cstd-field-icon" />
                 <input 
                   type="tel" 
                   name="phone"
@@ -149,40 +149,40 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
                 />
               </div>
             </div>
-            <button type="submit" className="admin-submit-btn" disabled={loading}>
+            <button type="submit" className="cstd-submit-btn" disabled={loading}>
               {loading ? "Generating Records..." : "Generate Profile & Assign Modules"}
             </button>
           </form>
         ) : (
-          <div className="id-generation-alert animate-fade-in">
-            <div className="alert-head">
-              <CheckCircle size={20} className="icon-green" />
+          <div className="cstd-success-card cstd-fade-anim">
+            <div className="cstd-success-head">
+              <CheckCircle size={20} className="cstd-icon-green" />
               <strong>Student Credentials Generated Successfully</strong>
             </div>
             
-            <div className="alert-body-id">
+            <div className="cstd-id-display-box">
               <div>
-                <span className="id-label">Access Student ID</span>
-                <p className="id-val-display">
-                  <strong className="id-highlight">{createdStudent.student_code}</strong>
+                <span className="cstd-id-lbl">Access Student ID</span>
+                <p className="cstd-id-val-wrap">
+                  <strong className="cstd-id-highlight">{createdStudent.student_code}</strong>
                 </p>
               </div>
             </div>
             
-            <div className="generated-modules-list">
-              <span className="modules-list-title">Assigned Exam Modules:</span>
-              <div className="module-item">
+            <div className="cstd-modules-box">
+              <span className="cstd-modules-title">Assigned Exam Modules:</span>
+              <div className="cstd-module-row">
                 <span>🎧 Listening:</span> <strong>{createdStudent.listeningTitle}</strong>
               </div>
-              <div className="module-item">
+              <div className="cstd-module-row">
                 <span>📖 Reading:</span> <strong>{createdStudent.readingTitle}</strong>
               </div>
-              <div className="module-item">
+              <div className="cstd-module-row">
                 <span>✍️ Writing:</span> <strong>{createdStudent.writingTitle}</strong>
               </div>
             </div>
 
-            <button className="btn-modal-done" onClick={handleClose}>
+            <button className="cstd-done-btn" onClick={handleClose}>
               Done & Close
             </button>
           </div>

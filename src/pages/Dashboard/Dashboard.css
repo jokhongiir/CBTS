@@ -1,304 +1,266 @@
 /* ==========================================================================
-   DESIGN VARIABLES & SYSTEM
+   DASHBOARD - BRAND NEW PROFESSIONAL CSS
    ========================================================================== */
-:root {
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-light: #eeebff;
-  --success: #10b981;
-  --success-light: #ecfdf5;
-  --danger: #ef4444;
-  --danger-light: #fef2f2;
-  --warning: #f59e0b;
-  --warning-light: #fffbeb;
-  --dark-bg: #0f172a;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-  --card-bg: #ffffff;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+
+.db-main-container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px;
+  animation: dbFadeInAnim 0.4s ease-in-out forwards;
 }
 
-/* Base Fade-in animation */
-.animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@keyframes dbFadeInAnim {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Loading State */
+.db-loader-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  gap: 16px;
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
-/* ==========================================================================
-   CONTAINER & HEADER SECTION
-   ========================================================================== */
-.dashboard-container {
-  /* margin: 0 auto; */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: var(--text-main);
-  background-color: #f8fafc;
-  /* min-height: 100vh; */
-  /* box-sizing: border-box; */
+.db-spin-icon {
+  animation: dbSpinAnim 1s linear infinite;
+  color: #0284c7;
 }
 
-.dashboard-header {
+@keyframes dbSpinAnim {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Header Section */
+.db-top-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  /* gap: 1rem; */
+  align-items: flex-start;
+  background: #ffffff;
+  padding: 24px 28px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.dashboard-title {
-  font-size: 1.75rem;
+.db-header-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.db-main-title {
+  font-size: 1.6rem;
   font-weight: 800;
-  color: var(--dark-bg);
-  margin: 0 0 0.375rem 0;
-  letter-spacing: -0.02em;
-}
-
-.dashboard-subtitle {
-  color: var(--text-muted);
+  color: #0f172a;
+  letter-spacing: -0.025em;
   margin: 0;
-  font-size: 0.95rem;
 }
 
-.btn-refresh-dashboard {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  padding: 0.625rem 1.25rem;
-  border-radius: var(--radius-md);
+.db-sub-title {
+  font-size: 0.92rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Sync Button */
+.db-sync-btn {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 10px 18px;
+  border-radius: 12px;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.88rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
 }
 
-.btn-refresh-dashboard:hover {
-  background-color: #f1f5f9;
-  border-color: #cbd5e1;
+.db-sync-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #94a3b8;
   transform: translateY(-1px);
 }
 
-.btn-refresh-dashboard:active {
-  transform: translateY(0);
-}
-
-/* ==========================================================================
-   GRID STATISTICS METRICS (4 Columns)
-   ========================================================================== */
-.dashboard-stats-grid {
+/* Metrics Grid Section */
+.db-metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1rem;
+  gap: 20px;
 }
 
-.stat-card {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.db-metric-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+.db-metric-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 20px -4px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
 }
 
-.stat-card-body {
+.db-card-inner {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-.stat-card-info {
+.db-card-content {
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
 
-.stat-card-title {
-  font-size: 0.875rem;
+.db-card-label {
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 0.5rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.stat-card-value {
-  font-size: 1.85rem;
+.db-card-number {
+  font-size: 2rem;
   font-weight: 800;
-  color: var(--dark-bg);
-  margin: 0 0 0.5rem 0;
-  letter-spacing: -0.03em;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-.stat-card-change {
-  display: inline-flex;
+.db-card-trend {
+  display: flex;
   align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #059669;
   font-weight: 600;
-  color: var(--text-muted);
+  margin-top: 4px;
 }
 
-.change-icon {
-  color: var(--success);
+.db-trend-arrow {
+  stroke-width: 2.5;
 }
 
-/* Color Themes for Icon Wrappers */
-.stat-card-icon-wrapper {
-  padding: 0.75rem;
-  border-radius: var(--radius-md);
+/* Card Icon Themes */
+.db-card-icon-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.stat-card-icon-wrapper.blue {
-  background-color: rgba(79, 70, 229, 0.08);
-  color: var(--primary);
+.db-theme-blue {
+  background: #e0f2fe;
+  color: #0284c7;
 }
 
-.stat-card-icon-wrapper.purple {
-  background-color: rgba(147, 51, 234, 0.08);
-  color: #9333ea;
+.db-theme-purple {
+  background: #ede9fe;
+  color: #7c3aed;
 }
 
-.stat-card-icon-wrapper.green {
-  background-color: rgba(16, 185, 129, 0.08);
-  color: var(--success);
+.db-theme-green {
+  background: #dcfce7;
+  color: #16a34a;
 }
 
-.stat-card-icon-wrapper.orange {
-  background-color: rgba(245, 158, 11, 0.08);
-  color: var(--warning);
+.db-theme-orange {
+  background: #ffedd5;
+  color: #ea580c;
 }
 
-/* ==========================================================================
-   FULL WIDTH CHART DISPLAY
-   ========================================================================== */
-.dashboard-charts-layout-full {
+/* Analytics Chart Section */
+.db-analytics-section {
   width: 100%;
-  margin-top: 1.5rem;
 }
 
-.dashboard-chart-card.full-width {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+.db-chart-panel {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
 }
 
-.chart-card-header {
+.db-panel-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-}
-
-.chart-card-title {
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--dark-bg);
-  margin: 0;
-  letter-spacing: -0.01em;
-}
-
-.chart-card-subtitle {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin: 0.35rem 0 0 0;
-}
-
-.chart-badge {
-  display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.75rem;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.db-panel-title {
+  font-size: 1.15rem;
   font-weight: 700;
-  background-color: var(--primary-light);
-  color: var(--primary);
-  padding: 0.375rem 0.75rem;
-  border-radius: 9999px;
+  color: #0f172a;
+  margin: 0 0 4px 0;
 }
 
-.chart-wrapper {
-  width: 100%;
-  height: 380px; /* Kattaroq ekranlar uchun chiroyli balandlik */
-  margin-top: 0.5rem;
+.db-panel-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
 }
 
-/* ==========================================================================
-   LOADING SPINNER STATE
-   ========================================================================== */
-.dashboard-loading {
+.db-live-badge {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  gap: 1.25rem;
-  color: var(--text-muted);
-  font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
+  gap: 6px;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-.spinner {
-  color: var(--primary);
-  animation: spin 1s linear infinite;
+.db-graph-container {
+  width: 100%;
+  height: 320px;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ==========================================================================
-   RESPONSIVE MEDIA QUERIES
-   ========================================================================== */
+/* Responsive Styles */
 @media (max-width: 768px) {
-  .dashboard-container {
-    padding: 1.25rem;
-  }
-  
-  .dashboard-header {
+  .db-top-header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    align-items: stretch;
   }
   
-  .btn-refresh-dashboard {
+  .db-sync-btn {
     width: 100%;
     justify-content: center;
   }
   
-  .dashboard-chart-card.full-width {
-    padding: 1.25rem;
-  }
-  
-  .chart-wrapper {
-    height: 280px; /* Mobil qurilmalarda bir oz kichraytiramiz */
+  .db-graph-container {
+    height: 260px;
   }
 }

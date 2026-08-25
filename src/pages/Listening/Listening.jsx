@@ -32,7 +32,6 @@ const Listening = () => {
     fetchExams();
   }, []);
 
-  // Statusni o'zgartirish (Enable / Disable)
   const handleToggleStatus = async (id, currentStatus) => {
     const newStatus = currentStatus === false ? true : false;
     const actionText = newStatus ? "enabled" : "disabled";
@@ -88,118 +87,113 @@ const Listening = () => {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">IELTS Listening Question Bank</h1>
-          <p className="text-sm text-gray-500">Manage 4-part simulation modules running on computerized test engines.</p>
+    <div className="listening-container animate-fade-in">
+      <div className="listening-header-box">
+        <div className="listening-title-group">
+          <h1>IELTS Listening Question Bank</h1>
+          <p>Manage 4-part simulation modules running on computerized test engines.</p>
         </div>
-        <button
-          onClick={handleAddNew}
-          className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-indigo-700 transition shadow-sm font-medium"
-        >
+        <button onClick={handleAddNew} className="btn-add-listening">
           <Plus size={18} /> Add New Listening Task
         </button>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center gap-2 p-12 text-slate-500 font-medium">
-          <Loader2 size={20} className="animate-spin text-indigo-500" />
+        <div className="listening-loading-box">
+          <Loader2 size={24} className="listening-spinner" />
           <span>Synchronizing media parameters...</span>
         </div>
       ) : exams.length === 0 ? (
-        <div className="bg-slate-50 border border-dashed rounded-2xl p-12 text-center text-gray-500">
+        <div className="listening-empty-box">
           No listening exam modules deployed yet. Use the action studio button to establish a track cluster.
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-          <table className="w-full border-collapse text-left">
-            <thead className="bg-slate-50/75 border-b border-slate-100 text-slate-600 font-semibold text-sm">
-              <tr>
-                <th className="p-4">Exam Architecture Reference</th>
-                <th className="p-4 text-center">Status</th>
-                <th className="p-4 text-center">Duration</th>
-                <th className="p-4">Deployment Date</th>
-                <th className="p-4 text-center">Actions Matrix</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700 text-sm">
-              {exams.map((exam, index) => {
-                const examDisplayNumber = exams.length - index;
-                const isActive = exam.is_active !== false; // Agar null yoki true bo'lsa aktiv hisoblanadi
+        <div className="listening-table-card">
+          <div className="listening-table-wrapper">
+            <table className="listening-flat-table">
+              <thead>
+                <tr>
+                  <th>Exam Architecture Reference</th>
+                  <th className="text-center">Status</th>
+                  <th className="text-center">Duration</th>
+                  <th>Deployment Date</th>
+                  <th className="text-center">Actions Matrix</th>
+                </tr>
+              </thead>
+              <tbody>
+                {exams.map((exam, index) => {
+                  const examDisplayNumber = exams.length - index;
+                  const isActive = exam.is_active !== false;
 
-                return (
-                  <tr key={exam.id} className={`hover:bg-slate-50/50 transition ${!isActive ? 'opacity-60 bg-slate-50/30' : ''}`}>
-                    <td className="p-4 font-medium text-slate-900">
-                      <div className="flex items-center gap-3">
-                        <Headphones size={18} className={`shrink-0 ${isActive ? 'text-indigo-500' : 'text-slate-400'}`} />
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className={`text-xs px-2 py-0.5 rounded font-bold ${isActive ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-600'}`}>
-                              L-{examDisplayNumber}
-                            </span>
-                            <span className={!isActive ? 'line-through text-slate-500' : ''}>{exam.title}</span>
-                          </div>
-                          <div className="block mt-0.5 text-xs">
-                            <a 
-                              href={`/student/listening/${exam.id}`} 
-                              target="_blank" 
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-700 font-semibold"
-                            >
-                              <Eye size={12} /> Launch Candidate Interface Simulation
-                            </a>
+                  return (
+                    <tr key={exam.id} className={!isActive ? 'listening-row-disabled' : ''}>
+                      <td>
+                        <div className="listening-cell-main">
+                          <Headphones size={18} className={`listening-main-icon ${!isActive ? 'disabled' : ''}`} />
+                          <div className="listening-info-stack">
+                            <div className="listening-title-row">
+                              <span className={`listening-badge-id ${!isActive ? 'disabled' : ''}`}>
+                                L-{examDisplayNumber}
+                              </span>
+                              <span className={!isActive ? 'listening-text-strike' : ''}>{exam.title}</span>
+                            </div>
+                            <div>
+                              <a 
+                                href={`/student/listening/${exam.id}`} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="listening-preview-link"
+                              >
+                                <Eye size={12} /> Launch Candidate Interface Simulation
+                              </a>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-4 text-center">
-                      <button
-                        onClick={() => handleToggleStatus(exam.id, isActive)}
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold transition ${
-                          isActive 
-                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' 
-                            : 'bg-rose-100 text-rose-700 hover:bg-rose-200'
-                        }`}
-                        title={isActive ? "Click to Disable" : "Click to Enable"}
-                      >
-                        <Power size={12} />
-                        {isActive ? 'Active (Enabled)' : 'Disabled'}
-                      </button>
-                    </td>
-                    <td className="p-4 text-center text-slate-600">
-                      <span className="inline-flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-md text-xs font-medium">
-                        <Clock size={12} /> {exam.duration} mins
-                      </span>
-                    </td>
-                    <td className="p-4 text-gray-500">
-                      <span className="inline-flex items-center gap-1">
-                        <Calendar size={12} /> {new Date(exam.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <div className="flex items-center justify-center gap-1">
+                      </td>
+                      <td className="text-center">
                         <button
-                          onClick={() => handleEdit(exam.id)}
-                          className="text-slate-400 hover:text-indigo-600 p-2 rounded-lg hover:bg-indigo-50 transition"
-                          title="Edit Task"
+                          onClick={() => handleToggleStatus(exam.id, isActive)}
+                          className={`listening-status-btn ${isActive ? 'active' : 'disabled-state'}`}
+                          title={isActive ? "Click to Disable" : "Click to Enable"}
                         >
-                          <Edit3 size={18} />
+                          <Power size={12} />
+                          {isActive ? 'Active (Enabled)' : 'Disabled'}
                         </button>
-                        <button
-                          onClick={() => handleDelete(exam.id)}
-                          className="text-slate-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition"
-                          title="Purge Task"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="text-center">
+                        <span className="listening-pill-meta">
+                          <Clock size={12} /> {exam.duration} mins
+                        </span>
+                      </td>
+                      <td>
+                        <span className="listening-date-text">
+                          <Calendar size={12} /> {new Date(exam.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                        </span>
+                      </td>
+                      <td className="text-center">
+                        <div className="listening-actions-group">
+                          <button
+                            onClick={() => handleEdit(exam.id)}
+                            className="listening-action-btn edit"
+                            title="Edit Task"
+                          >
+                            <Edit3 size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(exam.id)}
+                            className="listening-action-btn delete"
+                            title="Purge Task"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

@@ -1,209 +1,318 @@
-/* Listening sahifasining umumiy konteyneri */
-.p-6 {
-  max-width: 1300px;
-  margin: 0 auto;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #1e293b;
+/* ==========================================================================
+   LISTENING MODULE - NEW CLEAN STYLES (Matched with Students Design)
+   ========================================================================== */
+
+.listening-container {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  animation: listeningFadeIn 0.3s ease-in-out;
 }
 
-/* Sarlavhalar paneli */
-.flex.justify-between.items-center {
+@keyframes listeningFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes listeningSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.listening-spinner {
+  animation: listeningSpin 1s linear infinite;
+  color: #0284c7;
+}
+
+/* Header Section */
+.listening-header-box {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  /* margin-bottom: 2rem; */
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
-.text-2xl {
-  font-size: 1.625rem;
+.listening-title-group h1 {
+  font-size: 1.5rem;
   font-weight: 700;
   color: #0f172a;
-  letter-spacing: -0.02em;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.025em;
 }
 
-.text-sm.text-gray-500 {
-  font-size: 0.875rem;
+.listening-title-group p {
+  font-size: 0.92rem;
   color: #64748b;
-  margin-top: 0.25rem;
+  margin: 0;
 }
 
-/* Yangi listening qo'shish tugmasi */
-.bg-indigo-600 {
-  background-color: #4f46e5;
-  color: #ffffff;
-  padding: 0.65rem 1.25rem;
-  border-radius: 0.75rem;
-  display: inline-flex;
+/* Add Button */
+.btn-add-listening {
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: 550;
-  font-size: 0.875rem;
+  gap: 8px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
   border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
 }
 
-.bg-indigo-600:hover {
-  background-color: #4338ca;
+.btn-add-listening:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1), 0 2px 4px -1px rgba(79, 70, 229, 0.06);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
 }
 
-/* Yuklanmoqda holati */
-.p-12 {
-  padding: 4rem;
-  text-align: center;
-  color: #64748b;
-  font-size: 0.95rem;
-}
-
-/* Bo'sh holat (Placeholder) */
-.bg-slate-50 {
-  background-color: #f8fafc;
-  border: 2px dashed #e2e8f0;
-  border-radius: 1rem;
-  padding: 4rem 2rem;
-  text-align: center;
-  color: #64748b;
-  font-size: 1rem;
-}
-
-/* Asosiy jadval kartasi */
-.bg-white.rounded-2xl {
-  background: #ffffff;
-  border-radius: 1rem;
+/* Loading & Empty States */
+.listening-loading-box,
+.listening-empty-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 20px;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  background-color: #ffffff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  text-align: center;
 }
 
-.w-full.border-collapse {
+/* Table Card & Layout */
+.listening-table-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.listening-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.listening-flat-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  font-size: 0.875rem;
 }
 
-/* Jadval boshi (Thead) */
-.bg-slate-50\/75 {
+.listening-flat-table th {
   background-color: #f8fafc;
-  border-b: 1px solid #edf2f7;
-}
-
-th.p-4 {
-  padding: 1rem 1.25rem;
-  font-weight: 600;
-  font-size: 0.85rem;
   color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  padding: 12px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
 }
 
-th.text-center, td.text-center {
-  text-align: center;
-}
-
-/* Jadval tanasi (Tbody) */
-tr.hover\:bg-slate-50\/50:not(:last-child) {
+.listening-flat-table td {
+  padding: 14px 20px;
   border-bottom: 1px solid #f1f5f9;
-}
-
-tr.hover\:bg-slate-50\/50:hover {
-  background-color: #f8fafc;
-}
-
-td.p-4 {
-  padding: 1.1rem 1.25rem;
+  color: #334155;
   vertical-align: middle;
 }
 
-/* Imtihon nomi va nishonlari (L-1, L-2) */
-.flex.items-center.gap-3 {
+.listening-flat-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.listening-flat-table tbody tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* Disabled Row State */
+.listening-row-disabled td {
+  background-color: #f8fafc;
+  opacity: 0.7;
+}
+
+.listening-text-strike {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+/* Cell Main Content */
+.listening-cell-main {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 12px;
 }
 
-.text-indigo-500 {
-  color: #6366f1;
+.listening-main-icon {
+  color: #0284c7;
+  background-color: #e0f2fe;
+  padding: 8px;
+  border-radius: 8px;
+  box-sizing: content-box;
 }
 
-.bg-amber-100 {
-  background-color: #fef3c7;
-  color: #92400e;
-  font-size: 0.75rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.375rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+.listening-main-icon.disabled {
+  color: #94a3b8;
+  background-color: #f1f5f9;
 }
 
-/* Talaba ko'rinishida ochish havolasi */
-.text-emerald-600 {
-  color: #059669;
-  text-decoration: none;
-  font-weight: 600;
-  display: inline-flex;
+.listening-info-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.listening-title-row {
+  display: flex;
   align-items: center;
-  gap: 0.25rem;
-  margin-top: 0.25rem;
-  transition: color 0.15s ease;
+  gap: 8px;
+  font-weight: 600;
+  color: #0f172a;
 }
 
-.text-emerald-600:hover {
-  color: #047857;
-}
-
-/* Vaqt va Kalendar nishonlari */
-.bg-slate-100 {
+.listening-badge-id {
+  display: inline-block;
   background-color: #f1f5f9;
   color: #334155;
-  padding: 0.25rem 0.6rem;
-  border-radius: 0.5rem;
-  font-size: 0.775rem;
+  font-family: monospace;
+  font-size: 0.75rem;
   font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
 }
 
-.inline-flex.items-center.gap-1 {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: #64748b;
-}
-
-/* O'chirish tugmasi */
-.text-slate-400 {
+.listening-badge-id.disabled {
+  background-color: #f1f5f9;
   color: #94a3b8;
-  border: none;
-  background: transparent;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s;
+  text-decoration: line-through;
+}
+
+.listening-preview-link {
   display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #0284c7;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
-.text-slate-400:hover {
-  color: #ef4444;
+.listening-preview-link:hover {
+  color: #0369a1;
+  text-decoration: underline;
+}
+
+/* Status Button */
+.listening-status-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.listening-status-btn.active {
+  background-color: #ecfdf5;
+  color: #059669;
+  border-color: #a7f3d0;
+}
+
+.listening-status-btn.active:hover {
+  background-color: #d1fae5;
+}
+
+.listening-status-btn.disabled-state {
   background-color: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
 }
 
-/* Kichik ekranlar uchun adaptivlik */
+.listening-status-btn.disabled-state:hover {
+  background-color: #fee2e2;
+}
+
+/* Meta Pills (Duration & Date) */
+.listening-pill-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f8fafc;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+}
+
+.listening-date-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+/* Actions Matrix Buttons */
+.listening-actions-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.listening-action-btn {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listening-action-btn.edit:hover {
+  background-color: #e0f2fe;
+  color: #0284c7;
+  border-color: #bae6fd;
+}
+
+.listening-action-btn.delete:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .flex.justify-between.items-center {
+  .listening-header-box {
     flex-direction: column;
-    align-items: flex-start;
-  }
-  .bg-indigo-600 {
-    width: 100%;
-    justify-content: center;
-  }
-  .w-full.border-collapse {
-    display: block;
-    overflow-x: auto;
+    align-items: stretch;
   }
 }

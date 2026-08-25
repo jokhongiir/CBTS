@@ -1,59 +1,77 @@
 /* ==========================================================================
-   ADMIN LOGIN STYLES (MODERN MINIMALIST)
-   - Talaba portali dizayni bilan to'liq uyg'unlashgan
+   LOGIN PAGE - PROFESSIONAL CSS (0 dan)
    ========================================================================== */
 
+/* Umumiy sahifa konteyneri (Markazlashtirilgan va chiroyli fon) */
 .login-container {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
-  padding: 24px;
+  width: 100vw;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0284c7 100%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 20px;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
+/* Kirish kartasi (Login Card) */
 .login-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.04), 
-              0 1px 3px rgba(15, 23, 42, 0.02);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   width: 100%;
-  max-width: 440px;
-  padding: 48px 40px;
-  border: 1px solid #e2e8f0;
-  animation: adminCardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  box-sizing: border-box;
+  max-width: 420px;
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Sarlavha qismi */
 .login-header {
   text-align: center;
-  margin-bottom: 36px;
+  margin-bottom: 32px;
 }
 
 .login-header h2 {
-  font-size: 2rem;
-  color: #0f172a;
+  font-size: 1.6rem;
   font-weight: 800;
-  margin: 0 0 10px 0;
-  letter-spacing: -0.03em;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+  margin-bottom: 8px;
 }
 
 .login-header p {
+  font-size: 0.9rem;
   color: #64748b;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin: 0;
   font-weight: 500;
 }
 
+/* Forma qismi */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
+/* Input guruhlari */
 .login-input-group {
   display: flex;
   flex-direction: column;
@@ -64,94 +82,101 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: #334155;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 
+/* Inputni o'rab turuvchi wrapper */
 .login-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  width: 100%;
 }
 
 .login-input-icon {
   position: absolute;
   left: 16px;
   color: #94a3b8;
-  font-size: 1.25rem;
-  transition: all 0.2s ease;
-  pointer-events: none;
+  font-size: 1.2rem;
+  transition: color 0.2s ease;
 }
 
 .login-input-wrapper input {
   width: 100%;
-  padding: 15px 16px 15px 48px;
-  font-size: 1rem;
-  font-weight: 500;
-  border-radius: 12px;
+  padding: 13px 16px 13px 46px;
+  background: #f8fafc;
   border: 1px solid #cbd5e1;
-  background-color: #f8fafc;
-  color: #0f172a;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  letter-spacing: 0.02em;
-  box-sizing: border-box;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #1e293b;
   outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.login-input-wrapper input::placeholder {
+  color: #cbd5e1;
 }
 
 .login-input-wrapper input:focus {
-  border-color: #2563eb;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(37, 99, 254, 0.08);
+  background: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
 }
 
-.login-input-wrapper input:focus + .login-input-icon {
-  color: #2563eb;
+.login-input-wrapper input:focus + .login-input-icon,
+.login-input-wrapper:focus-within .login-input-icon {
+  color: #0284c7;
 }
 
+/* Xatolik yozuvi */
 .login-error-text {
-  font-size: 0.75rem;
-  color: #ef4444;
-  font-weight: 600;
-  margin-top: -4px;
+  font-size: 0.78rem;
+  color: #dc2626;
+  font-weight: 500;
+  margin-top: 2px;
 }
 
+/* Yuborish (Submit) tugmasi */
 .login-submit-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 15px;
-  font-size: 1rem;
-  font-weight: 600;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: #ffffff;
-  background-color: #2563eb;
   border: none;
+  width: 100%;
+  padding: 14px;
   border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(37, 99, 254, 0.12);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
   margin-top: 8px;
 }
 
 .login-submit-btn:hover:not(:disabled) {
-  background-color: #1d4ed8;
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(37, 99, 254, 0.22);
+}
+
+.login-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .login-submit-btn:disabled {
-  background-color: #94a3b8;
   opacity: 0.7;
   cursor: not-allowed;
+  background: #94a3b8;
   box-shadow: none;
 }
 
-@keyframes adminCardEntrance {
-  from { opacity: 0; transform: translateY(24px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
+/* Mobil moslashuv (Responsive) */
 @media (max-width: 480px) {
-  .login-card { padding: 36px 24px; border-radius: 14px; }
-  .login-header h2 { font-size: 1.75rem; }
+  .login-card {
+    padding: 28px 20px;
+    border-radius: 20px;
+  }
+  
+  .login-header h2 {
+    font-size: 1.4rem;
+  }
 }

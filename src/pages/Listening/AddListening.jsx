@@ -454,25 +454,25 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
 
   if (loadingData) {
     return (
-      <div className="add-listening-container animate-fade-in" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
-        <Loader2 size={32} className="animate-spin text-indigo-600" />
-        <span style={{ marginLeft: '10px', fontWeight: 'bold' }}>Yuklanmoqda...</span>
+      <div className="add-listening-container loading-state-box">
+        <Loader2 size={32} className="listening-spinner" />
+        <span className="loading-text">Yuklanmoqda...</span>
       </div>
     );
   }
 
   return (
-    <div className="add-listening-container animate-fade-in">
+    <div className="add-listening-container">
       <div className="admin-page-header">
-        <button type="button" onClick={onBack} className="btn-back-link" style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
+        <button type="button" onClick={onBack} className="btn-back-link">
           <ArrowLeft size={18} /> Orqaga qaytish
         </button>
         <h2>{editExamId ? "Cambridge IELTS Listening Editor" : "Cambridge IELTS Listening Creator"}</h2>
       </div>
 
       <form onSubmit={handleSaveExam} className="listening-form-card">
-        <div className="form-grid-header" style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-          <div className="input-group" style={{ flex: 3 }}>
+        <div className="form-grid-header">
+          <div className="input-group title-input-group">
             <label>Exam Full Title</label>
             <input 
               type="text" 
@@ -482,7 +482,7 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
               required 
             />
           </div>
-          <div className="input-group shrink" style={{ flex: 1 }}>
+          <div className="input-group duration-input-group">
             <label>Total Duration (Minutes)</label>
             <input 
               type="number" 
@@ -493,7 +493,7 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
           </div>
         </div>
 
-        <div className="listening-parts-tabs" style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+        <div className="listening-parts-tabs">
           {['part1', 'part2', 'part3', 'part4'].map((pKey, idx) => {
             const totalQ = parts[pKey].groups.reduce((acc, g) => acc + (g.questions?.filter(q => q.question_number !== null)?.length || 0), 0);
             return (
@@ -502,22 +502,21 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                 type="button" 
                 className={`part-tab-btn ${activeTab === pKey ? 'active' : ''}`} 
                 onClick={() => setActiveTab(pKey)}
-                style={{ padding: '10px', background: activeTab === pKey ? '#4f46e5' : '#e2e8f0', color: activeTab === pKey ? '#fff' : '#000', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
               >
-                <Headphones size={16} style={{ marginRight: '5px' }} /> Part {idx + 1} ({totalQ} Questions)
+                <Headphones size={16} /> Part {idx + 1} ({totalQ} Questions)
               </button>
             );
           })}
         </div>
 
-        <div className="part-workspace-box" style={{ background: '#f8fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-          <div className="audio-uploader-zone mb-6" style={{ marginBottom: '20px' }}>
-            <label className="audio-upload-label" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Section Audio Payload (.mp3 / .wav)</label>
-            <div className="audio-flex-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <label className={`file-upload-custom-btn ${uploadingPart === activeTab ? 'disabled' : ''}`} style={{ padding: '8px 16px', background: '#64748b', color: '#fff', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="part-workspace-box">
+          <div className="audio-uploader-zone">
+            <label className="audio-upload-label">Section Audio Payload (.mp3 / .wav)</label>
+            <div className="audio-flex-wrapper">
+              <label className={`file-upload-custom-btn ${uploadingPart === activeTab ? 'disabled' : ''}`}>
                 {uploadingPart === activeTab ? (
                   <>
-                    <Loader2 size={16} className="animate-spin" /> Yuklanmoqda...
+                    <Loader2 size={16} className="listening-spinner" /> Yuklanmoqda...
                   </>
                 ) : (
                   <>
@@ -529,23 +528,23 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                   accept="audio/*" 
                   onChange={(e) => handleAudioUpload(e, activeTab)} 
                   disabled={uploadingPart !== null}
-                  style={{ display: 'none' }} 
+                  className="hidden-file-input" 
                 />
               </label>
               {parts[activeTab].audio_url ? (
-                <div className="audio-player-preview-card" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span className="badge-success-audio" style={{ color: 'green', fontWeight: 'bold' }}>Audio Yuklandi ✅</span>
+                <div className="audio-player-preview-card">
+                  <span className="badge-success-audio">Audio Yuklandi ✅</span>
                   <audio src={parts[activeTab].audio_url} controls className="mini-audio-player" />
                 </div>
               ) : (
-                <span className="no-audio-alert" style={{ color: '#94a3b8' }}>Audio fayl yuklanmagan.</span>
+                <span className="no-audio-alert">Audio fayl yuklanmagan.</span>
               )}
             </div>
           </div>
 
-          <div className="question-type-picker-box spec-ielts-picker" style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fff', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', marginBottom: '20px' }}>
-            <Layers size={18} className="text-indigo-600" />
-            <label style={{ fontWeight: '500' }}>Add New Question Group:</label>
+          <div className="question-type-picker-box">
+            <Layers size={18} className="picker-icon" />
+            <label>Add New Question Group:</label>
             <select 
               onChange={(e) => { if(e.target.value) { handleAddGroup(activeTab, e.target.value); e.target.value = ''; } }} 
               defaultValue=""
@@ -557,52 +556,51 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
             </select>
           </div>
 
-          <div className="ielts-groups-timeline mt-6">
+          <div className="ielts-groups-timeline">
             {parts[activeTab].groups.map((group, gIdx) => (
-              <div key={group.id} className="ielts-group-card" style={{ background: '#fff', padding: '15px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '15px' }}>
-                <div className="group-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span className="ielts-type-tag" style={{ background: '#eef2f6', padding: '4px 8px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.85rem' }}>{IELTS_QUESTION_TYPES[group.type]}</span>
+              <div key={group.id} className="ielts-group-card">
+                <div className="group-card-header">
+                  <span className="ielts-type-tag">{IELTS_QUESTION_TYPES[group.type]}</span>
                   
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <div className="group-header-actions">
                     <button 
                       type="button" 
                       onClick={() => handleAddQuestionToGroup(activeTab, gIdx)} 
-                      style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem' }}
+                      className="btn-add-row"
                     >
                       <Plus size={14} /> Add Row
                     </button>
-                    <button type="button" onClick={() => handleRemoveGroup(activeTab, group.id)} style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <button type="button" onClick={() => handleRemoveGroup(activeTab, group.id)} className="btn-remove-group">
                       <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
 
-                <div className="input-group my-3" style={{ marginBottom: '10px' }}>
+                <div className="input-group instruction-group">
                   <label>Instruction Prompt</label>
                   <input 
                     type="text" 
                     value={group.instruction} 
                     onChange={(e) => handleGroupMetaChange(activeTab, gIdx, 'instruction', e.target.value)} 
                     placeholder="Masalan: Choose the correct letter, A, B or C."
-                    style={{ width: '100%', padding: '6px', marginTop: '4px' }}
                   />
                 </div>
 
                 {group.type === 'LABELLING' && (
-                  <div className="map-image-config-box my-3" style={{ border: '1px dashed #4f46e5', padding: '10px', borderRadius: '6px', marginBottom: '15px' }}>
+                  <div className="map-image-config-box">
                     <div className="input-group">
-                      <label style={{ display: 'block', color: '#4f46e5', marginBottom: '5px' }}>
+                      <label className="map-label">
                         <ImageIcon size={14} /> Upload Diagram or Map Image
                       </label>
-                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <label className={`file-upload-custom-btn ${uploadingMapId === group.id ? 'disabled' : ''}`} style={{ padding: '6px 12px', background: '#4f46e5', color: '#fff', borderRadius: '4px', cursor: 'pointer' }}>
-                          {uploadingMapId === group.id ? <Loader2 size={14} className="animate-spin" /> : "Rasm Tanlash"}
+                      <div className="map-upload-row">
+                        <label className={`file-upload-custom-btn ${uploadingMapId === group.id ? 'disabled' : ''}`}>
+                          {uploadingMapId === group.id ? <Loader2 size={14} className="listening-spinner" /> : "Rasm Tanlash"}
                           <input 
                             type="file" 
                             accept="image/*" 
                             onChange={(e) => handleMapImageUpload(e, activeTab, gIdx, group.id)} 
                             disabled={uploadingMapId !== null}
-                            style={{ display: 'none' }} 
+                            className="hidden-file-input" 
                           />
                         </label>
                         <input 
@@ -610,46 +608,45 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                           placeholder="Yoki rasm URL manzilini qo'ying..." 
                           value={group.diagram_image_url || ''} 
                           onChange={(e) => handleGroupMetaChange(activeTab, gIdx, 'diagram_image_url', e.target.value)} 
-                          style={{ flex: 1, padding: '6px' }}
+                          className="map-url-input"
                         />
                       </div>
                     </div>
                     {group.diagram_image_url && (
-                      <div className="map-preview-wrapper mt-2" style={{ marginTop: '10px' }}>
-                        <img src={group.diagram_image_url} alt="Map Rendering" style={{ maxWidth: '200px', borderRadius: '4px' }} />
+                      <div className="map-preview-wrapper">
+                        <img src={group.diagram_image_url} alt="Map Rendering" className="map-preview-img" />
                       </div>
                     )}
                   </div>
                 )}
 
                 {(group.type === 'MATCHING' || group.type === 'CLASSIFICATION' || group.type === 'LABELLING') && (
-                  <div className="matching-options-config-box my-3" style={{ background: '#f1f5f9', padding: '12px', borderRadius: '6px', marginBottom: '15px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 'bold' }}>Matching Options Configuration:</p>
+                  <div className="matching-options-config-box">
+                    <div className="matching-options-header">
+                      <p>Matching Options Configuration:</p>
                       <button 
                         type="button"
                         onClick={() => handleAddMatchingOption(activeTab, gIdx)}
-                        style={{ background: '#4f46e5', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        className="btn-add-option"
                       >
                         <Plus size={12} /> Add Option
                       </button>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div className="matching-options-grid">
                       {group.matching_options?.map((opt, oIdx) => (
-                        <div key={oIdx} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: '#fff', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }}>
-                          <strong style={{ minWidth: '20px', color: '#4f46e5' }}>{opt.id}:</strong>
+                        <div key={oIdx} className="matching-option-item">
+                          <strong>{opt.id}:</strong>
                           <input 
                             type="text" 
                             value={opt.text} 
                             onChange={(e) => handleGroupMatchingOptionChange(activeTab, gIdx, oIdx, 'text', e.target.value)} 
                             placeholder="Option text..." 
-                            style={{ flex: 1, border: 'none', outline: 'none', fontSize: '0.9rem' }}
                           />
                           <button 
                             type="button"
                             onClick={() => handleRemoveMatchingOption(activeTab, gIdx, oIdx)}
-                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '2px' }}
+                            className="btn-remove-option"
                           >
                             <X size={14} />
                           </button>
@@ -659,7 +656,7 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                   </div>
                 )}
 
-                <div className="group-questions-inner-list mt-4" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div className="group-questions-inner-list">
                   {group.questions?.map((q, qIdx) => {
                     const hasTextBefore = q.has_text_before !== false;
                     const hasCorrectAnswer = q.has_correct_answer !== false;
@@ -669,88 +666,76 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                     return (
                       <div 
                         key={qIdx} 
-                        className="ielts-question-row-item" 
-                        style={{ 
-                          background: isQuestionActive ? '#f8fafc' : '#f1f5f9', 
-                          padding: '12px', 
-                          borderRadius: '6px', 
-                          border: `1px solid ${isQuestionActive ? '#e2e8f0' : '#cbd5e1'}`, 
-                          display: 'flex', 
-                          gap: '10px', 
-                          alignItems: 'flex-start',
-                          opacity: isQuestionActive ? 1 : 0.85
-                        }}
+                        className={`ielts-question-row-item ${!isQuestionActive ? 'inactive' : ''}`}
                       >
-                        <div className="inline-q-num" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '50px' }}>
-                          <strong style={{ color: isQuestionActive ? '#0f172a' : '#64748b' }}>
+                        <div className="inline-q-num">
+                          <strong>
                             {isQuestionActive ? `Q${q.question_number}` : 'Text'}
                           </strong>
                           <button 
                             type="button" 
                             onClick={() => handleRemoveQuestionFromGroup(activeTab, gIdx, qIdx)}
-                            style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginTop: '4px' }}
+                            className="btn-row-minus"
                           >
                             <Minus size={12} />
                           </button>
                         </div>
 
                         {group.type === 'NOTE_COMPLETION' && (
-                          <div style={{ display: 'flex', gap: '8px', width: '100%', alignItems: 'center', flexWrap: 'wrap' }}>
-                            <div style={{ display: 'flex', flex: 2, gap: '4px', alignItems: 'center', minWidth: '150px' }}>
+                          <div className="note-completion-row-builder">
+                            <div className="note-segment-group">
                               {hasTextBefore && (
                                 <input 
                                   type="text" 
                                   value={q.text_before || ''} 
                                   onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'text_before', e.target.value)} 
                                   placeholder="Text before gap..." 
-                                  style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }} 
                                 />
                               )}
                               <button 
                                 type="button" 
                                 title={hasTextBefore ? "Hide Text Before" : "Show Text Before"}
                                 onClick={() => toggleInputVisibility(activeTab, gIdx, qIdx, 'has_text_before', 'text_before', !hasTextBefore)}
-                                style={{ background: hasTextBefore ? '#10b981' : '#94a3b8', color: '#fff', border: 'none', borderRadius: '4px', padding: '6px', cursor: 'pointer' }}
+                                className={`visibility-toggle-btn ${hasTextBefore ? 'active' : ''}`}
                               >
                                 {hasTextBefore ? <Eye size={14} /> : <EyeOff size={14} />}
                               </button>
                             </div>
 
-                            <div style={{ display: 'flex', flex: 1.5, gap: '4px', alignItems: 'center', minWidth: '120px' }}>
+                            <div className="note-segment-group answer-segment">
                               {hasCorrectAnswer && (
                                 <input 
                                   type="text" 
                                   value={q.correct_answer || ''} 
                                   onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'correct_answer', e.target.value)} 
-                                  placeholder="Answer..." 
-                                  style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1.5px solid #4f46e5', fontWeight: 'bold' }} 
+                                  placeholder="Correct answer..." 
+                                  className="correct-answer-input"
                                 />
                               )}
                               <button 
                                 type="button" 
-                                title={hasCorrectAnswer ? "Turn into normal text (No Q Number)" : "Turn into Gap (With Q Number)"}
+                                title={hasCorrectAnswer ? "Convert to Static Text (No Answer)" : "Convert to Gap Question"}
                                 onClick={() => toggleInputVisibility(activeTab, gIdx, qIdx, 'has_correct_answer', 'correct_answer', !hasCorrectAnswer)}
-                                style={{ background: hasCorrectAnswer ? '#4f46e5' : '#94a3b8', color: '#fff', border: 'none', borderRadius: '4px', padding: '6px', cursor: 'pointer' }}
+                                className={`visibility-toggle-btn answer ${hasCorrectAnswer ? 'active' : ''}`}
                               >
                                 {hasCorrectAnswer ? <Eye size={14} /> : <EyeOff size={14} />}
                               </button>
                             </div>
 
-                            <div style={{ display: 'flex', flex: 2, gap: '4px', alignItems: 'center', minWidth: '150px' }}>
+                            <div className="note-segment-group">
                               {hasTextAfter && (
                                 <input 
                                   type="text" 
                                   value={q.text_after || ''} 
                                   onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'text_after', e.target.value)} 
                                   placeholder="Text after gap..." 
-                                  style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }} 
                                 />
                               )}
                               <button 
                                 type="button" 
                                 title={hasTextAfter ? "Hide Text After" : "Show Text After"}
                                 onClick={() => toggleInputVisibility(activeTab, gIdx, qIdx, 'has_text_after', 'text_after', !hasTextAfter)}
-                                style={{ background: hasTextAfter ? '#10b981' : '#94a3b8', color: '#fff', border: 'none', borderRadius: '4px', padding: '6px', cursor: 'pointer' }}
+                                className={`visibility-toggle-btn ${hasTextAfter ? 'active' : ''}`}
                               >
                                 {hasTextAfter ? <Eye size={14} /> : <EyeOff size={14} />}
                               </button>
@@ -758,90 +743,55 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                           </div>
                         )}
 
-                        {group.type === 'MULTIPLE_CHOICE' && (
-                          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <input 
-                              type="text" 
-                              value={q.text || ''} 
-                              onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'text', e.target.value)} 
-                              placeholder="Multiple choice question text..." 
-                              style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }} 
-                            />
-                            
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingLeft: '10px' }}>
-                              {q.options?.map((opt, oIdx) => (
-                                <div key={oIdx} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <span style={{ fontWeight: 'bold', minWidth: '20px' }}>{opt.id}.</span>
-                                  <input 
-                                    type="text" 
-                                    value={opt.text} 
-                                    onChange={(e) => handleQuestionOptionChange(activeTab, gIdx, qIdx, oIdx, e.target.value)} 
-                                    placeholder={`Option ${opt.id} text...`} 
-                                    style={{ flex: 1, padding: '4px 8px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
-                                  />
-                                  <button 
-                                    type="button" 
-                                    onClick={() => handleRemoveQuestionOption(activeTab, gIdx, qIdx, oIdx)}
-                                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
-                                  >
-                                    <X size={14} />
-                                  </button>
-                                </div>
-                              ))}
-                              <button 
-                                type="button"
-                                onClick={() => handleAddQuestionOption(activeTab, gIdx, qIdx)}
-                                style={{ background: '#f1f5f9', border: '1px dashed #cbd5e1', padding: '4px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', width: 'fit-content' }}
-                              >
-                                + Add Option Letter
-                              </button>
-                            </div>
-
-                            <input 
-                              type="text" 
-                              value={q.correct_answer || ''} 
-                              onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'correct_answer', e.target.value)} 
-                              placeholder="Correct Answer (e.g. A)" 
-                              style={{ width: '200px', padding: '6px', borderRadius: '4px', border: '1.5px solid #4f46e5', fontWeight: 'bold' }} 
-                            />
-                          </div>
-                        )}
-
-                        {(group.type === 'MATCHING' || group.type === 'CLASSIFICATION' || group.type === 'LABELLING') && (
-                          <div style={{ width: '100%', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        {group.type !== 'NOTE_COMPLETION' && (
+                          <div className="standard-question-builder">
                             <input 
                               type="text" 
                               value={q.text || ''} 
                               onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'text', e.target.value)} 
                               placeholder="Question text or statement..." 
-                              style={{ flex: 2, padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }} 
+                              className="standard-q-text-input"
                             />
-                            <input 
-                              type="text" 
-                              value={q.correct_answer || ''} 
-                              onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'correct_answer', e.target.value)} 
-                              placeholder="Correct Option ID (e.g. A)" 
-                              style={{ flex: 1, padding: '6px', borderRadius: '4px', border: '1.5px solid #4f46e5', fontWeight: 'bold' }} 
-                            />
-                          </div>
-                        )}
 
-                        {group.type === 'SHORT_ANSWER' && (
-                          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <input 
-                              type="text" 
-                              value={q.text || ''} 
-                              onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'text', e.target.value)} 
-                              placeholder="Short answer question text..." 
-                              style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }} 
-                            />
-                            <input 
-                              type="text" 
-                              value={q.correct_answer || ''} 
-                              onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'correct_answer', e.target.value)} 
-                              placeholder="Correct answer..." 
-                              style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1.5px solid #4f46e5', fontWeight: 'bold' }} 
-                            />
+                            {group.type === 'MULTIPLE_CHOICE' ? (
+                              <div className="mcq-options-inline-builder">
+                                {q.options?.map((opt, optIdx) => (
+                                  <div key={optIdx} className="mcq-option-pill">
+                                    <span>{opt.id}:</span>
+                                    <input 
+                                      type="text" 
+                                      value={opt.text} 
+                                      onChange={(e) => handleQuestionOptionChange(activeTab, gIdx, qIdx, optIdx, e.target.value)} 
+                                      placeholder={`Option ${opt.id}`} 
+                                    />
+                                    <button 
+                                      type="button" 
+                                      onClick={() => handleRemoveQuestionOption(activeTab, gIdx, qIdx, optIdx)}
+                                      className="btn-remove-option"
+                                    >
+                                      <X size={12} />
+                                    </button>
+                                  </div>
+                                ))}
+                                <button 
+                                  type="button" 
+                                  onClick={() => handleAddQuestionOption(activeTab, gIdx, qIdx)}
+                                  className="btn-add-option"
+                                >
+                                  <Plus size={12} /> Opt
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="note-segment-group answer-segment">
+                                <input 
+                                  type="text" 
+                                  value={q.correct_answer || ''} 
+                                  onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'correct_answer', e.target.value)} 
+                                  placeholder="Correct answer key..." 
+                                  className="correct-answer-input"
+                                />
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -853,16 +803,10 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
           </div>
         </div>
 
-        <div className="form-submit-footer" style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
-          <button 
-            type="submit" 
-            disabled={isSaving}
-            style={{ padding: '10px 20px', background: '#4f46e5', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-          >
-            {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-            {editExamId ? "Imtihonni Yangilash" : "Imtihonni Saqlash"}
-          </button>
-        </div>
+        <button type="submit" disabled={isSaving} className="std-add-btn" style={{ justifyContent: 'center', width: '100%', marginTop: '1rem', padding: '12px' }}>
+          {isSaving ? <Loader2 size={18} className="listening-spinner" /> : <Save size={18} />}
+          {editExamId ? "Imtihonni Yangilash" : "Imtihonni Saqlash"}
+        </button>
       </form>
     </div>
   );

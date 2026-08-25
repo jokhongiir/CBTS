@@ -30,7 +30,6 @@ const Dashboard = () => {
     writingCount: 0,
   });
 
-  // Fetch real count data from Supabase
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
@@ -61,7 +60,6 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
-  // Mock data for weekly analytics visualization
   const chartData = [
     { name: 'Monday', attempts: 240 },
     { name: 'Tuesday', attempts: 380 },
@@ -74,8 +72,8 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-loading">
-        <RefreshCw className="spinner animate-spin" size={40} />
+      <div className="db-loader-wrapper">
+        <RefreshCw className="db-spin-icon" size={40} />
         <p>Loading dashboard statistics...</p>
       </div>
     );
@@ -87,60 +85,60 @@ const Dashboard = () => {
       value: stats.studentsCount,
       change: "Registered accounts",
       icon: Users,
-      colorClass: "blue"
+      theme: "db-theme-blue"
     },
     {
       title: "Listening Exams",
       value: stats.listeningCount,
       change: "Active audio tests",
       icon: Volume2,
-      colorClass: "purple"
+      theme: "db-theme-purple"
     },
     {
       title: "Reading Exams",
       value: stats.readingCount,
       change: "Active reading tests",
       icon: BookOpen,
-      colorClass: "green"
+      theme: "db-theme-green"
     },
     {
       title: "Writing Exams",
       value: stats.writingCount,
       change: "Active essay topics",
       icon: PenTool,
-      colorClass: "orange"
+      theme: "db-theme-orange"
     }
   ];
 
   return (
-    <div className="dashboard-container animate-fade-in">
+    <div className="db-main-container">
       {/* Header Section */}
-      <header className="dashboard-header">
-        <div className="header-title-wrapper">
-          <h1 className="dashboard-title">Welcome back, Admin! 👋</h1>
-          <p className="dashboard-subtitle">Real-time statistics and overview of the Intellect Academy CBT system</p>
+      <header className="db-top-header">
+        <div className="db-header-texts">
+          <h1 className="db-main-title">Welcome back, Admin! 👋</h1>
+          <p className="db-sub-title">Real-time statistics and overview of the Intellect Academy CBT system</p>
         </div>
-        <button onClick={fetchDashboardData} className="btn-refresh-dashboard">
+        <button onClick={fetchDashboardData} className="db-sync-btn">
           <RefreshCw size={16} /> Sync Data
         </button>
       </header>
 
       {/* Grid Statistics Metrics */}
-      <section className="dashboard-stats-grid" aria-label="Statistics Metrics">
+      <section className="db-metrics-grid" aria-label="Statistics Metrics">
         {statCards.map((stat, index) => {
           const IconComponent = stat.icon;
           return (
-            <div key={index} className="stat-card">
-              <div className="stat-card-body">
-                <div className="stat-card-info">
-                  <span className="stat-card-title">{stat.title}</span>
-                  <h3 className="stat-card-value">{stat.value}</h3>
-                  <span className="stat-card-change">
-                    <TrendingUp className="change-icon" size={14} /> 
+            <div key={index} className="db-metric-card">
+              <div className="db-card-inner">
+                <div className="db-card-content">
+                  <span className="db-card-label">{stat.title}</span>
+                  <h3 className="db-card-number">{stat.value}</h3>
+                  <span className="db-card-trend">
+                    <TrendingUp className="db-trend-arrow" size={14} /> 
                     {stat.change}
                   </span>
                 </div>
-                <div className={`stat-card-icon-wrapper ${stat.colorClass}`}>
+                <div className={`db-card-icon-box ${stat.theme}`}>
                   <IconComponent size={24} strokeWidth={2} />
                 </div>
               </div>
@@ -150,22 +148,22 @@ const Dashboard = () => {
       </section>
 
       {/* Full Width Chart Section */}
-      <div className="dashboard-charts-layout-full">
-        <div className="dashboard-chart-card full-width">
-          <div className="chart-card-header">
+      <div className="db-analytics-section">
+        <div className="db-chart-panel">
+          <div className="db-panel-header">
             <div>
-              <h2 className="chart-card-title">Weekly Exam Performance</h2>
-              <p className="chart-card-subtitle">Total completed CBT exam attempts per day</p>
+              <h2 className="db-panel-title">Weekly Exam Performance</h2>
+              <p className="db-panel-subtitle">Total completed CBT exam attempts per day</p>
             </div>
-            <div className="chart-badge">
+            <div className="db-live-badge">
               <Activity size={14} /> Live Trend
             </div>
           </div>
-          <div className="chart-wrapper">
+          <div className="db-graph-container">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorAttempts" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="dbGradColor" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
                   </linearGradient>
@@ -182,7 +180,7 @@ const Dashboard = () => {
                     fontSize: '12px'
                   }} 
                 />
-                <Area type="monotone" dataKey="attempts" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#colorAttempts)" />
+                <Area type="monotone" dataKey="attempts" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#dbGradColor)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>

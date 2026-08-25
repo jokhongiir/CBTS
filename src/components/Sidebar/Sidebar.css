@@ -1,243 +1,162 @@
 /* ==========================================================================
-   SIDEBAR SYSTEM DESIGN TOKENS
+   SIDEBAR COMPONENT - PROFESSIONAL CSS (0 dan)
    ========================================================================== */
-:root {
-  --sb-width: 280px;
-  --sb-width-collapsed: 80px;
-  --sb-bg: #0f172a;               /* Slate 900 (To'q ko'k / qora) */
-  --sb-border: rgba(255, 255, 255, 0.06);
-  --sb-text-muted: #94a3b8;       /* Slate 400 */
-  --sb-text-active: #ffffff;
-  --sb-item-hover: rgba(255, 255, 255, 0.04);
-  --sb-active-bg: rgba(79, 70, 229, 0.15); /* Indigo binafsha tus */
-  --sb-active-border: #6366f1;    /* Indigo 500 */
-  --sb-radius: 12px;
-  --sb-ease: cubic-bezier(0.25, 0.8, 0.25, 1);
-}
 
-/* ==========================================================================
-   SIDEBAR MAIN CONTAINER
-   ========================================================================== */
 .sidebar-container {
-  width: var(--sb-width);
-  min-width: var(--sb-width);
-  max-width: var(--sb-width);
-  height: 100vh;
-  background-color: var(--sb-bg);
-  border-right: 1px solid var(--sb-border);
+  width: 280px;
+  background-color: #ffffff;
+  border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  position: fixed;
+  height: 100vh;
+  position: sticky;
   top: 0;
   left: 0;
-  z-index: 100; /* Oddiy holatda o'rtacha balandlikda turadi */
-  color: var(--sb-text-muted);
-  box-sizing: border-box;
-  transition: all 0.3s var(--sb-ease);
+  z-index: 80;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  transition: all 0.3s ease;
+  user-select: none;
 }
 
-/* ==========================================================================
-   LOGO SECTION
-   ========================================================================== */
+/* Modal ochiq paytdagi xiralashish va bosilmaslik holati */
+.sidebar-disabled-blur {
+  filter: blur(3px);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Logo Qismi */
 .sidebar-logo-section {
-  padding: 1.75rem 1.5rem;
-  border-bottom: 1px solid var(--sb-border);
+  padding: 24px 24px 20px 24px;
+  border-bottom: 1px solid #f1f5f9;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 6px;
 }
 
 .sidebar-logo-text {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 800;
-  color: #ffffff;
-  margin: 0;
+  color: #0f172a;
   letter-spacing: -0.025em;
-  white-space: nowrap;
+  margin: 0;
 }
 
 .sidebar-logo-text span {
-  background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #0284c7;
 }
 
 .sidebar-badge {
-  align-self: flex-start;
-  font-size: 0.65rem;
+  display: inline-block;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  background-color: rgba(99, 102, 241, 0.12);
-  color: #818cf8;
-  padding: 0.25rem 0.625rem;
+  padding: 3px 8px;
   border-radius: 6px;
-  border: 1px solid rgba(99, 102, 241, 0.15);
+  width: max-content;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* ==========================================================================
-   NAVIGATION MENU
-   ========================================================================== */
+/* Navigatsiya Menyusi */
 .sidebar-nav-menu {
   flex: 1;
-  padding: 1.5rem 1rem;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 6px;
   overflow-y: auto;
 }
 
-/* Scrollbar dizayni */
-.sidebar-nav-menu::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sidebar-nav-menu::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-/* NAV LINKS */
+/* Menyudagi har bir link */
 .sidebar-nav-link {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
-  padding: 0.8rem 1rem;
-  color: var(--sb-text-muted);
+  gap: 12px;
+  padding: 12px 16px;
+  color: #64748b;
   text-decoration: none;
-  font-size: 0.925rem;
   font-weight: 500;
-  border-radius: var(--sb-radius);
-  transition: all 0.2s var(--sb-ease);
+  font-size: 0.93rem;
+  border-radius: 12px;
+  transition: all 0.2s ease;
   position: relative;
-  overflow: hidden;
 }
 
+.sidebar-nav-link:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* Faol link (Active link) dizayni */
+.sidebar-active-link {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.sidebar-active-link:hover {
+  color: #ffffff !important;
+}
+
+/* Ikonkalar */
 .sidebar-icon {
+  font-size: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.35rem;
   flex-shrink: 0;
-  transition: color 0.2s var(--sb-ease);
 }
 
 .sidebar-link-text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: opacity 0.2s var(--sb-ease);
 }
 
-/* HOVER EFFECTS */
-.sidebar-nav-link:hover {
-  background-color: var(--sb-item-hover);
-  color: var(--sb-text-active);
-}
-
-.sidebar-nav-link:hover .sidebar-icon {
-  color: #818cf8;
-}
-
-/* ACTIVE LINK STYLE */
-.sidebar-nav-link.sidebar-active-link {
-  background-color: var(--sb-active-bg);
-  color: var(--sb-text-active);
-  font-weight: 600;
-}
-
-.sidebar-nav-link.sidebar-active-link .sidebar-icon {
-  color: var(--sb-active-border);
-}
-
-/* Faol menyuning chap tomonidagi indikator chizig'i */
-.sidebar-nav-link.sidebar-active-link::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 25%;
-  height: 50%;
-  width: 4px;
-  background-color: var(--sb-active-border);
-  border-radius: 0 4px 4px 0;
-}
-
-/* ==========================================================================
-   FOOTER & LOGOUT SYSTEM
-   ========================================================================== */
+/* Footer va Logout tugmasi */
 .sidebar-footer {
-  padding: 1.25rem 1rem;
-  border-top: 1px solid var(--sb-border);
+  padding: 16px;
+  border-top: 1px solid #f1f5f9;
+  background-color: #ffffff;
 }
 
 .sidebar-logout-btn {
-  width: 100%;
-  background: transparent;
-  border: none;
   display: flex;
   align-items: center;
-  gap: 0.875rem;
-  padding: 0.8rem 1rem;
-  color: #f87171;                /* Chiroyli och qizil rang */
-  font-size: 0.925rem;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fee2e2;
+  border-radius: 12px;
   font-weight: 600;
-  border-radius: var(--sb-radius);
+  font-size: 0.93rem;
   cursor: pointer;
-  transition: all 0.2s var(--sb-ease);
-  text-align: left;
+  transition: all 0.2s ease;
 }
 
 .sidebar-logout-btn:hover {
-  background-color: rgba(239, 68, 68, 0.08);
-  color: #ef4444;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+  transform: translateY(-1px);
 }
 
-/* ==========================================================================
-   MODAL INTERACTION (BLURRING & DISABLE)
-   ========================================================================== */
-.sidebar-disabled-blur {
-  pointer-events: none !important;            /* Bosishni mutlaqo taqiqlaydi */
-  user-select: none !important;               /* Matnni belgilashni cheklaydi */
-  filter: blur(5px) grayscale(30%) !important; /* Premium darajadagi xira effekt */
-  opacity: 0.55 !important;                   /* Rang to'qligini pasaytiradi */
-}
-
-/* ==========================================================================
-   RESPONSIVENESS (RESPONSIVE TABLETS & LAPTOPS)
-   ========================================================================== */
+/* Responsivlik (Kichik ekranlar uchun) */
 @media (max-width: 1024px) {
   .sidebar-container {
-    width: var(--sb-width-collapsed);
-    min-width: var(--sb-width-collapsed);
-    max-width: var(--sb-width-collapsed);
+    width: 240px;
   }
+}
 
-  .sidebar-logo-section {
-    align-items: center;
-    padding: 1.5rem 0.5rem;
-  }
-
-  .sidebar-logo-text, 
-  .sidebar-badge, 
-  .sidebar-link-text {
-    display: none !important; /* Yozuvlarni butunlay berkitib faqat ikonkalarni qoldiramiz */
-  }
-
-  .sidebar-nav-link {
-    justify-content: center;
-    padding: 0.8rem;
-  }
-
-  .sidebar-logout-btn {
-    justify-content: center;
-    padding: 0.8rem;
-  }
-
-  .sidebar-nav-link.sidebar-active-link::before {
-    display: none; /* Kichrayganda chap chiziqchani olib tashlaymiz */
-  }
-  
-  .sidebar-nav-link.sidebar-active-link {
-    border: 1px solid rgba(99, 102, 241, 0.3);
+@media (max-width: 768px) {
+  .sidebar-container {
+    width: 100%;
+    height: auto;
+    position: relative;
   }
 }
