@@ -13,6 +13,9 @@ const Students = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Tanlangan o'quvchilar ID larini saqlash uchun state
+  const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
   const fetchInitialData = useCallback(async () => {
     try {
@@ -34,6 +37,7 @@ const Students = () => {
       setListeningExams(listeningRes.data || []);
       setReadingExams(readingRes.data || []);
       setWritingExams(writingRes.data || []);
+      setSelectedStudentIds([]); // Ma'lumot yangilanganda tanlovni tozalash
     } catch (error) {
       console.error("Error loading system data:", error.message);
       toast.error("Failed to load students and exam configurations");
@@ -46,6 +50,7 @@ const Students = () => {
     fetchInitialData();
   }, [fetchInitialData]);
 
+  // Bitta o'quvchini o'chirish
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to permanently delete this student record?")) return;
     
@@ -55,10 +60,52 @@ const Students = () => {
       
       toast.success("Student record successfully deleted");
       setStudents(prev => prev.filter(student => student.id !== id));
+      setSelectedStudentIds(prev => prev.filter(item => item !== id));
     } catch (error) {
       console.error("Delete operation failure:", error.message);
       toast.error("An error occurred while deleting the student record");
     }
+  };
+
+  // Tanlangan barcha o'quvchilarni o'chirish (Bulk Delete)
+  const handleBulkDelete = async () => {
+    if (selectedStudentIds.length === 0) return;
+    
+    if (!window.confirm(`Are you sure you want to permanently delete ${selectedStudentIds.length} selected student(s)?`)) return;
+
+    const toastId = toast.loading("Deleting selected students...");
+    try {
+      const { error } = await supabase
+        .from('students')
+        .delete()
+        .in('id', selectedStudentIds);
+
+      if (error) throw error;
+
+      toast.success(`${selectedStudentIds.length} student(s) successfully deleted!`, { id: toastId });
+      setStudents(prev => prev.filter(student => !selectedStudentIds.includes(student.id)));
+      setSelectedStudentIds([]);
+    } catch (error) {
+      console.error("Bulk delete failure:", error.message);
+      toast.error("An error occurred while deleting selected students", { id: toastId });
+    }
+  };
+
+  // Hammasini belgilash yoki belgilashni bekor qilish (Select All)
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allFilteredIds = filteredStudents.map(student => student.id);
+      setSelectedStudentIds(allFilteredIds);
+    } else {
+      setSelectedStudentIds([]);
+    }
+  };
+
+  // Bitta qatorni belgilash
+  const handleSelectOne = (id) => {
+    setSelectedStudentIds(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
   };
 
   const filteredStudents = students.filter(student => {
@@ -85,6 +132,8 @@ const Students = () => {
     return `${prefix}-${index + 1}`; 
   };
 
+  const isAllSelected = filteredStudents.length > 0 && filteredStudents.every(student => selectedStudentIds.includes(student.id));
+
   return (
     <div className="admin-students-page animate-fade-in">
       <header className="admin-page-header">
@@ -106,9 +155,20 @@ const Students = () => {
       <main className="admin-full-content">
         <div className="admin-card-box full-width-card">
           <div className="table-top-controls">
-            <div className="card-box-header">
+            <div className="card-box-header flex items-center gap-3">
               <BookOpen size={18} className="icon-purple" />
               <h2>Registered Candidates</h2>
+              
+              {/* Tanlanganlar bo'lsa o'chirish tugmasi chiqadi */}
+              {selectedStudentIds.length > 0 && (
+                <button 
+                  onClick={handleBulkDelete}
+                  className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition font-medium shadow-sm ml-4"
+                >
+                  <Trash2 size={14} />
+                  <span>Delete Selected ({selectedStudentIds.length})</span>
+                </button>
+              )}
             </div>
             
             <div className="admin-search-wrapper">
@@ -136,6 +196,14 @@ const Students = () => {
               <table className="admin-flat-table">
                 <thead>
                   <tr>
+                    <th style={{ width: '40px', textAlign: 'center' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={isAllSelected}
+                        onChange={handleSelectAll}
+                        style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                      />
+                    </th>
                     <th>Student ID</th>
                     <th>Full Name</th>
                     <th>Phone Number</th>
@@ -148,9 +216,18 @@ const Students = () => {
                     const readingLabel = getDisplayLabel(student.assigned_reading_exam_id, readingExams, 'R');
                     const listeningLabel = getDisplayLabel(student.assigned_listening_exam_id, listeningExams, 'L');
                     const writingLabel = getDisplayLabel(student.assigned_writing_exam_id, writingExams, 'W');
+                    const isSelected = selectedStudentIds.includes(student.id);
                     
                     return (
-                      <tr key={student.id}>
+                      <tr key={student.id} className={isSelected ? 'bg-indigo-50/40' : ''}>
+                        <td style={{ textAlign: 'center' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={isSelected}
+                            onChange={() => handleSelectOne(student.id)}
+                            style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                          />
+                        </td>
                         <td>
                           <span className="badge-id">{student.student_code || 'N/A'}</span>
                         </td>

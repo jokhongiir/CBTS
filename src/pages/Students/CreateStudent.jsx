@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserPlus, CheckCircle, Copy, ClipboardCheck, Phone, X } from 'lucide-react';
+import { UserPlus, CheckCircle, Phone, X } from 'lucide-react';
 import { supabase } from '../../config/supabaseClient'; 
 import { toast } from 'react-hot-toast';
 
@@ -7,7 +7,6 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
   const [formData, setFormData] = useState({ fullName: '', phone: '' });
   const [loading, setLoading] = useState(false);
   const [createdStudent, setCreatedStudent] = useState(null); 
-  const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
@@ -18,7 +17,6 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
 
   const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-  // UUID formatini tekshiruvchi yordamchi funksiya
   const isValidUuid = (id) => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return typeof id === 'string' && uuidRegex.test(id);
@@ -36,28 +34,32 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
     setLoading(true);
     try {
       const [listeningRes, readingRes, writingRes] = await Promise.all([
-        supabase.from('listening_exams').select('id, title'),
-        supabase.from('reading_exams').select('id, title'),
-        supabase.from('writing_exams').select('id, title')
+        supabase.from('listening_exams').select('id, title, is_active'),
+        supabase.from('reading_exams').select('id, title, is_active'),
+        supabase.from('writing_exams').select('id, title, is_active')
       ]);
 
       if (listeningRes.error) throw listeningRes.error;
       if (readingRes.error) throw readingRes.error;
       if (writingRes.error) throw writingRes.error;
 
-      if (!listeningRes.data?.length || !readingRes.data?.length || !writingRes.data?.length) {
-        toast.error("Ensure at least 1 exam exists for all modules (L, R, W) before creating a student!");
+      // Faqatgina statusi o'chirilmagan (is_active !== false) savollarni filtrlash
+      const activeListening = (listeningRes.data || []).filter(item => item.is_active !== false);
+      const activeReading = (readingRes.data || []).filter(item => item.is_active !== false);
+      const activeWriting = (writingRes.data || []).filter(item => item.is_active !== false);
+
+      if (!activeListening.length || !activeReading.length || !activeWriting.length) {
+        toast.error("Ensure at least 1 active (enabled) exam exists for all modules (L, R, W) before creating a student!");
         setLoading(false);
         return;
       }
 
-      const selectedListening = getRandomItem(listeningRes.data);
-      const selectedReading = getRandomItem(readingRes.data);
-      const selectedWriting = getRandomItem(writingRes.data);
+      const selectedListening = getRandomItem(activeListening);
+      const selectedReading = getRandomItem(activeReading);
+      const selectedWriting = getRandomItem(activeWriting);
       
       const studentCode = `ST-${Math.floor(1000 + Math.random() * 9000)}`;
 
-      // ID lar UUID formatida ekanligini tekshiramiz, aks holda null yuboramiz (xato bermasligi uchun)
       const listeningId = isValidUuid(selectedListening.id) ? selectedListening.id : null;
       const readingId = isValidUuid(selectedReading.id) ? selectedReading.id : null;
       const writingId = isValidUuid(selectedWriting.id) ? selectedWriting.id : null;
@@ -88,7 +90,6 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
       });
       
       setFormData({ fullName: '', phone: '' });
-      setCopied(false);
       
       if (onStudentAdded) onStudentAdded();
     } catch (error) {
@@ -97,13 +98,6 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    toast.success("Student ID copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleClose = () => {

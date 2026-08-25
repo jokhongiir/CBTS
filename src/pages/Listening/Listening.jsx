@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Headphones, Clock, Calendar, Eye, Loader2, Edit3 } from 'lucide-react';
+import { Plus, Trash2, Headphones, Clock, Calendar, Eye, Loader2, Edit3, Power } from 'lucide-react';
 import { supabase } from '../../config/supabaseClient';
 import { toast } from 'react-hot-toast';
 import AddListening from './AddListening';
@@ -31,6 +31,27 @@ const Listening = () => {
   useEffect(() => {
     fetchExams();
   }, []);
+
+  // Statusni o'zgartirish (Enable / Disable)
+  const handleToggleStatus = async (id, currentStatus) => {
+    const newStatus = currentStatus === false ? true : false;
+    const actionText = newStatus ? "enabled" : "disabled";
+    
+    const toastId = toast.loading(`Updating exam status to ${actionText}...`);
+    try {
+      const { error } = await supabase
+        .from('listening_exams')
+        .update({ is_active: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setExams(prev => prev.map(exam => exam.id === id ? { ...exam, is_active: newStatus } : exam));
+      toast.success(`Listening exam successfully ${actionText}!`, { id: toastId });
+    } catch (err) {
+      toast.error("Failed to update status: " + err.message, { id: toastId });
+    }
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to permanently delete this Listening exam? All associated student records and group configurations will be purged!")) return;
@@ -96,6 +117,7 @@ const Listening = () => {
             <thead className="bg-slate-50/75 border-b border-slate-100 text-slate-600 font-semibold text-sm">
               <tr>
                 <th className="p-4">Exam Architecture Reference</th>
+                <th className="p-4 text-center">Status</th>
                 <th className="p-4 text-center">Duration</th>
                 <th className="p-4">Deployment Date</th>
                 <th className="p-4 text-center">Actions Matrix</th>
@@ -104,18 +126,19 @@ const Listening = () => {
             <tbody className="divide-y divide-slate-100 text-slate-700 text-sm">
               {exams.map((exam, index) => {
                 const examDisplayNumber = exams.length - index;
+                const isActive = exam.is_active !== false; // Agar null yoki true bo'lsa aktiv hisoblanadi
 
                 return (
-                  <tr key={exam.id} className="hover:bg-slate-50/50 transition">
+                  <tr key={exam.id} className={`hover:bg-slate-50/50 transition ${!isActive ? 'opacity-60 bg-slate-50/30' : ''}`}>
                     <td className="p-4 font-medium text-slate-900">
                       <div className="flex items-center gap-3">
-                        <Headphones size={18} className="text-indigo-500 shrink-0" />
+                        <Headphones size={18} className={`shrink-0 ${isActive ? 'text-indigo-500' : 'text-slate-400'}`} />
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded font-bold">
+                            <span className={`text-xs px-2 py-0.5 rounded font-bold ${isActive ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-600'}`}>
                               L-{examDisplayNumber}
                             </span>
-                            <span>{exam.title}</span>
+                            <span className={!isActive ? 'line-through text-slate-500' : ''}>{exam.title}</span>
                           </div>
                           <div className="block mt-0.5 text-xs">
                             <a 
@@ -129,6 +152,20 @@ const Listening = () => {
                           </div>
                         </div>
                       </div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <button
+                        onClick={() => handleToggleStatus(exam.id, isActive)}
+                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold transition ${
+                          isActive 
+                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' 
+                            : 'bg-rose-100 text-rose-700 hover:bg-rose-200'
+                        }`}
+                        title={isActive ? "Click to Disable" : "Click to Enable"}
+                      >
+                        <Power size={12} />
+                        {isActive ? 'Active (Enabled)' : 'Disabled'}
+                      </button>
                     </td>
                     <td className="p-4 text-center text-slate-600">
                       <span className="inline-flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-md text-xs font-medium">

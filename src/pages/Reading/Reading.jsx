@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabaseClient';
 import { toast } from 'react-hot-toast';
-import { Plus, Trash2, BookOpen, Clock, FileText, Layers, Search, Calendar, Edit3, Loader2 } from 'lucide-react';
+import { Plus, Trash2, BookOpen, Clock, FileText, Layers, Search, Calendar, Edit3, Loader2, Power } from 'lucide-react';
 import AddReading from './AddReading';
 import './Reading.css';
 
@@ -32,6 +32,27 @@ const Reading = () => {
   useEffect(() => {
     fetchReadingExams();
   }, []);
+
+  // Statusni o'zgartirish (Enable / Disable)
+  const handleToggleStatus = async (id, currentStatus) => {
+    const newStatus = currentStatus === false ? true : false;
+    const actionText = newStatus ? "enabled" : "disabled";
+    
+    const toastId = toast.loading(`Imtihon holati ${actionText} qilinmoqda...`);
+    try {
+      const { error } = await supabase
+        .from('reading_exams')
+        .update({ is_active: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setExams(prev => prev.map(exam => exam.id === id ? { ...exam, is_active: newStatus } : exam));
+      toast.success(`Reading imtihoni muvaffaqiyatli ${actionText}!`, { id: toastId });
+    } catch (err) {
+      toast.error("Statusni o'zgartirishda xatolik: " + err.message, { id: toastId });
+    }
+  };
 
   const handleDelete = async (exam) => {
     if (!window.confirm(`Haqiqatan ham "${exam.title}" imtihonini o'chirib yubormoqchimisiz?`)) return;
@@ -134,6 +155,7 @@ const Reading = () => {
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 <th style={{ padding: '12px 16px', width: '100px' }}>Indeks</th>
                 <th style={{ padding: '12px 16px' }}>Imtihon Nomi</th>
+                <th style={{ padding: '12px 16px', textAlign: 'center' }}>Status</th>
                 <th style={{ padding: '12px 16px' }}>Ajratilgan Vaqt</th>
                 <th style={{ padding: '12px 16px' }}>Tarkibi</th>
                 <th style={{ padding: '12px 16px' }}>Savollar Soni</th>
@@ -143,21 +165,45 @@ const Reading = () => {
             <tbody>
               {filteredExams.map((exam, index) => {
                 const examDisplayNumber = exams.length - index;
+                const isActive = exam.is_active !== false;
+
                 return (
-                  <tr key={exam.id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.2s' }}>
+                  <tr key={exam.id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.2s', opacity: isActive ? 1 : 0.6, background: isActive ? 'transparent' : '#f8fafc' }}>
                     <td style={{ padding: '14px 16px' }}>
-                      <span className="reading-id-tag" style={{ background: '#f1f5f9', color: '#475569', padding: '4px 8px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.85rem' }}>
+                      <span className="reading-id-tag" style={{ background: isActive ? '#f1f5f9' : '#e2e8f0', color: '#475569', padding: '4px 8px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.85rem' }}>
                         R-{examDisplayNumber}
                       </span>
                     </td>
                     <td style={{ padding: '14px 16px' }}>
                       <div className="table-title-cell" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                        <span className="reading-main-title" style={{ fontWeight: '600', color: '#1e293b' }}>{exam.title}</span>
+                        <span className="reading-main-title" style={{ fontWeight: '600', color: '#1e293b', textDecoration: isActive ? 'none' : 'line-through' }}>{exam.title}</span>
                         <span className="reading-sub-text" style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center' }}>
                           <Calendar size={12} style={{ marginRight: '4px' }} />
                           Yaratilgan: {new Date(exam.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}
                         </span>
                       </div>
+                    </td>
+                    <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                      <button
+                        onClick={() => handleToggleStatus(exam.id, isActive)}
+                        style={{
+                          background: isActive ? '#d1fae5' : '#ffe4e6',
+                          color: isActive ? '#065f46' : '#9f1239',
+                          border: 'none',
+                          padding: '5px 10px',
+                          borderRadius: '20px',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                        title={isActive ? "O'chirish uchun bosing" : "Yoqish uchun bosing"}
+                      >
+                        <Power size={12} />
+                        {isActive ? 'Active' : 'Disabled'}
+                      </button>
                     </td>
                     <td style={{ padding: '14px 16px' }}>
                       <span className="reading-time-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#334155', fontSize: '0.9rem' }}>
