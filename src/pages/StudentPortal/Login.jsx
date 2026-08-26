@@ -7,7 +7,8 @@ import logo from "../../assets/logo.png";
 import "./Login.css";
 
 const StudentLogin = () => {
-  const [studentId, setStudentId] = useState("");
+  // Boshlang'ich qiymatni "ST-" qilib belgilaymiz
+  const [studentId, setStudentId] = useState("ST-");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const canvasRef = useRef(null);
@@ -132,25 +133,28 @@ const StudentLogin = () => {
   }, []);
 
   const handleIdChange = (e) => {
-    let value = e.target.value.toUpperCase();
-    if (value === "ST") {
+    let value = e.target.value;
+
+    // Agar foydalanuvchi "ST-" qismini o'chirishga urunsa yoki matn "ST-" bilan boshlanmasa, uni qayta tiklaymiz
+    if (!value.startsWith("ST-")) {
       setStudentId("ST-");
       return;
     }
-    if (value.startsWith("ST-")) {
-      const numericPart = value.slice(3).replace(/[^0-9]/g, "");
-      setStudentId("ST-" + numericPart);
-    } else {
-      setStudentId(value.replace(/[^A-Z0-9]/g, ""));
-    }
+
+    // "ST-" dan keyingi qismni ajratib olib, faqat raqamlarni qoldiramiz
+    const numericPart = value.slice(3).replace(/[^0-9]/g, "");
+    
+    // Natijani "ST-" ga qo'shamiz
+    setStudentId("ST-" + numericPart);
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     const formattedId = studentId.trim();
 
+    // Agar faqat "ST-" qolgan bo'lsa, xatolik beramiz
     if (!formattedId || formattedId === "ST-") {
-      toast.error("Please enter a valid Student ID.");
+      toast.error("Please enter a valid Student ID numbers.");
       return;
     }
 
@@ -213,13 +217,12 @@ const StudentLogin = () => {
           {/* FORM */}
           <form onSubmit={handleLogin} className="ia-login-form">
             <div className="ia-form-group">
-              {/* <label htmlFor="studentIdInput">Student Exam ID</label> */}
               <div className="ia-input-container">
                 <KeyRound size={18} className="ia-input-ico" />
                 <input
                   id="studentIdInput"
                   type="text"
-                  placeholder="e.g. ST-3180"
+                  placeholder="ST-3180"
                   value={studentId}
                   onChange={handleIdChange}
                   disabled={loading}
