@@ -256,7 +256,7 @@ body {
   background: #f8fafc;
 }
 
-/* Start Overlay — BUTUN SAHIFA, ORQA FON OQ (prozrachniy emas) */
+/* Start Overlay */
 .start-exam-overlay {
   position: fixed;
   inset: 0;
@@ -554,7 +554,7 @@ body {
 }
 
 /* ================================================================= */
-/* 5. IMAGE ZOOM MODAL POPUP                                         */
+/* 5. IMAGE ZOOM MODAL POPUP (Yangi tuzatilgan qism)                 */
 /* ================================================================= */
 .writing-modal-overlay {
   position: fixed;
@@ -620,9 +620,13 @@ body {
   background: #f1f5f9;
 }
 
+/* Rasm modal ichida to'liq, qirqilmasdan va mutanosib ko'rinishi uchun */
 .writing-modal-body img {
   max-width: 100%;
+  max-height: calc(85vh - 100px);
+  width: auto;
   height: auto;
+  object-fit: contain;
   border-radius: 6px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }

@@ -16,7 +16,15 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  // Chinakam random (tasodifiy) ta'minlash uchun Fisher-Yates shuffle algoritmi
+  const shuffleArray = (array) => {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
 
   const isValidUuid = (id) => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -34,6 +42,7 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
     
     setLoading(true);
     try {
+      // 1. Bazadan barcha imtihonlarni to'g'ridan-to'g'ri tortib olamiz
       const [listeningRes, readingRes, writingRes] = await Promise.all([
         supabase.from('listening_exams').select('id, title, is_active'),
         supabase.from('reading_exams').select('id, title, is_active'),
@@ -44,19 +53,26 @@ const CreateStudent = ({ isOpen, onClose, onStudentAdded }) => {
       if (readingRes.error) throw readingRes.error;
       if (writingRes.error) throw writingRes.error;
 
-      const activeListening = (listeningRes.data || []).filter(item => item.is_active !== false);
-      const activeReading = (readingRes.data || []).filter(item => item.is_active !== false);
-      const activeWriting = (writingRes.data || []).filter(item => item.is_active !== false);
+      // 2. Faolligini tekshirish (agar is_active ustuni false bo'lmasa, demak active deb qaraymiz)
+      const activeListening = (listeningRes.data || []).filter(item => item.is_active === true || item.is_active === undefined || item.is_active === null);
+      const activeReading = (readingRes.data || []).filter(item => item.is_active === true || item.is_active === undefined || item.is_active === null);
+      const activeWriting = (writingRes.data || []).filter(item => item.is_active === true || item.is_active === undefined || item.is_active === null);
 
       if (!activeListening.length || !activeReading.length || !activeWriting.length) {
-        toast.error("Ensure at least 1 active (enabled) exam exists for all modules (L, R, W) before creating a student!");
+        toast.error("Ensure at least 1 exam exists for all modules (L, R, W) before creating a student!");
         setLoading(false);
         return;
       }
 
-      const selectedListening = getRandomItem(activeListening);
-      const selectedReading = getRandomItem(activeReading);
-      const selectedWriting = getRandomItem(activeWriting);
+      // 3. Uchala modulni ham alohida to'liq aralashtiramiz (Shuffle)
+      const shuffledListening = shuffleArray(activeListening);
+      const shuffledReading = shuffleArray(activeReading);
+      const shuffledWriting = shuffleArray(activeWriting);
+
+      // 4. Aralashtirilgan ro'yxatdan birinchi elementni olamiz (bu har safar 100% random bo'ladi)
+      const selectedListening = shuffledListening[0];
+      const selectedReading = shuffledReading[0];
+      const selectedWriting = shuffledWriting[0];
       
       const studentCode = `ST-${Math.floor(1000 + Math.random() * 9000)}`;
 
