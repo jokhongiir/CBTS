@@ -39,7 +39,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .student-writing-empty {
@@ -71,7 +73,7 @@ body {
   background: #2563eb;
   color: #ffffff;
   border: none;
-  padding: 10px 20px;
+  padding: 12px 20px;
   border-radius: 8px;
   font-size: 0.95rem;
   font-weight: 600;
@@ -88,8 +90,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ================================================================= */
@@ -169,6 +177,7 @@ body {
   font-size: 1.1rem;
   font-weight: 700;
   color: #0f172a;
+  margin: 0;
 }
 
 /* Task Switch Tabs */
@@ -247,46 +256,45 @@ body {
   background: #f8fafc;
 }
 
-/* Start Overlay */
+/* Start Overlay — BUTUN SAHIFA, ORQA FON OQ (prozrachniy emas) */
 .start-exam-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
+  z-index: 9999;
   padding: 20px;
 }
 
 .overlay-card {
   background: #ffffff;
   width: 100%;
-  max-width: 450px;
-  padding: 32px;
+  max-width: 500px;
+  padding: 40px;
   border-radius: 16px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   text-align: center;
   display: flex;
   flex-direction: column;
   gap: 16px;
   border: 1px solid #e2e8f0;
+  animation: fadeIn 0.25s ease-out;
 }
 
 .overlay-card h3 {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #0f172a;
+  margin: 0;
 }
 
 .overlay-card p {
   font-size: 0.95rem;
   color: #475569;
-  line-height: 1.5;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .btn-trigger-start-exam {
@@ -298,12 +306,13 @@ body {
   color: #ffffff;
   border: none;
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
+  margin-top: 8px;
 }
 
 .btn-trigger-start-exam:hover {
@@ -345,6 +354,7 @@ body {
   font-size: 1.05rem;
   font-weight: 700;
   color: #0f172a;
+  margin: 0;
 }
 
 .question-prompt-text {
@@ -475,7 +485,13 @@ body {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Navigation Actions Row inside Answer Panel */
+.portal-writing-textarea:disabled {
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Navigation Actions Row */
 .navigation-actions-row {
   display: flex;
   align-items: center;
@@ -542,16 +558,13 @@ body {
 /* ================================================================= */
 .writing-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 10000;
   padding: 24px;
 }
 
@@ -581,6 +594,7 @@ body {
   font-size: 1rem;
   font-weight: 700;
   color: #0f172a;
+  margin: 0;
 }
 
 .btn-close-modal {
@@ -622,13 +636,16 @@ body {
     height: auto;
     overflow-y: auto;
   }
+
   .student-writing-container {
     height: auto;
     overflow-y: auto;
   }
+
   .exam-question-panel {
     max-height: 400px;
   }
+
   .exam-answer-panel {
     min-height: 450px;
   }
@@ -642,11 +659,45 @@ body {
     gap: 12px;
     align-items: flex-start;
   }
+
   .exam-limits-panel {
     width: 100%;
     justify-content: space-between;
   }
+
   .task-switch-tabs {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .top-navigation-row {
+    padding: 8px 16px;
+  }
+
+  .overlay-card {
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .task-view-container {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .exam-question-panel,
+  .exam-answer-panel {
+    padding: 16px;
+  }
+
+  .navigation-actions-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-nav-prev,
+  .btn-nav-next,
+  .btn-portal-submit-exam {
     width: 100%;
     justify-content: center;
   }
