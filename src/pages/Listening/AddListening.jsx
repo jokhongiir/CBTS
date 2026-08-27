@@ -454,25 +454,25 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
 
   if (loadingData) {
     return (
-      <div className="add-listening-container loading-state-box">
-        <Loader2 size={32} className="listening-spinner" />
-        <span className="loading-text">Yuklanmoqda...</span>
+      <div className="als-root-wrapper als-loading-state">
+        <Loader2 size={32} className="als-spinner-anim" />
+        <span className="als-loading-label">Yuklanmoqda...</span>
       </div>
     );
   }
 
   return (
-    <div className="add-listening-container">
-      <div className="admin-page-header">
-        <button type="button" onClick={onBack} className="btn-back-link">
+    <div className="als-root-wrapper">
+      <div className="als-top-bar">
+        <button type="button" onClick={onBack} className="als-back-btn">
           <ArrowLeft size={18} /> Orqaga qaytish
         </button>
         <h2>{editExamId ? "Cambridge IELTS Listening Editor" : "Cambridge IELTS Listening Creator"}</h2>
       </div>
 
-      <form onSubmit={handleSaveExam} className="listening-form-card">
-        <div className="form-grid-header">
-          <div className="input-group title-input-group">
+      <form onSubmit={handleSaveExam} className="als-main-card">
+        <div className="als-header-grid">
+          <div className="als-field-block als-title-field">
             <label>Exam Full Title</label>
             <input 
               type="text" 
@@ -482,7 +482,7 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
               required 
             />
           </div>
-          <div className="input-group duration-input-group">
+          <div className="als-field-block als-duration-field">
             <label>Total Duration (Minutes)</label>
             <input 
               type="number" 
@@ -493,14 +493,14 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
           </div>
         </div>
 
-        <div className="listening-parts-tabs">
+        <div className="als-section-tabs">
           {['part1', 'part2', 'part3', 'part4'].map((pKey, idx) => {
             const totalQ = parts[pKey].groups.reduce((acc, g) => acc + (g.questions?.filter(q => q.question_number !== null)?.length || 0), 0);
             return (
               <button 
                 key={pKey} 
                 type="button" 
-                className={`part-tab-btn ${activeTab === pKey ? 'active' : ''}`} 
+                className={`als-tab-item ${activeTab === pKey ? 'als-tab-active' : ''}`} 
                 onClick={() => setActiveTab(pKey)}
               >
                 <Headphones size={16} /> Part {idx + 1} ({totalQ} Questions)
@@ -509,14 +509,14 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
           })}
         </div>
 
-        <div className="part-workspace-box">
-          <div className="audio-uploader-zone">
-            <label className="audio-upload-label">Section Audio Payload (.mp3 / .wav)</label>
-            <div className="audio-flex-wrapper">
-              <label className={`file-upload-custom-btn ${uploadingPart === activeTab ? 'disabled' : ''}`}>
+        <div className="als-workspace-panel">
+          <div className="als-audio-zone">
+            <label className="als-audio-label">Section Audio Payload (.mp3 / .wav)</label>
+            <div className="als-audio-row">
+              <label className={`als-upload-btn ${uploadingPart === activeTab ? 'als-upload-disabled' : ''}`}>
                 {uploadingPart === activeTab ? (
                   <>
-                    <Loader2 size={16} className="listening-spinner" /> Yuklanmoqda...
+                    <Loader2 size={16} className="als-spinner-anim" /> Yuklanmoqda...
                   </>
                 ) : (
                   <>
@@ -528,22 +528,22 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                   accept="audio/*" 
                   onChange={(e) => handleAudioUpload(e, activeTab)} 
                   disabled={uploadingPart !== null}
-                  className="hidden-file-input" 
+                  className="als-hidden-input" 
                 />
               </label>
               {parts[activeTab].audio_url ? (
-                <div className="audio-player-preview-card">
-                  <span className="badge-success-audio">Audio Yuklandi ✅</span>
-                  <audio src={parts[activeTab].audio_url} controls className="mini-audio-player" />
+                <div className="als-audio-preview">
+                  <span className="als-audio-badge">Audio Yuklandi ✅</span>
+                  <audio src={parts[activeTab].audio_url} controls className="als-mini-player" />
                 </div>
               ) : (
-                <span className="no-audio-alert">Audio fayl yuklanmagan.</span>
+                <span className="als-no-audio">Audio fayl yuklanmagan.</span>
               )}
             </div>
           </div>
 
-          <div className="question-type-picker-box">
-            <Layers size={18} className="picker-icon" />
+          <div className="als-type-selector">
+            <Layers size={18} className="als-type-icon" />
             <label>Add New Question Group:</label>
             <select 
               onChange={(e) => { if(e.target.value) { handleAddGroup(activeTab, e.target.value); e.target.value = ''; } }} 
@@ -556,27 +556,27 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
             </select>
           </div>
 
-          <div className="ielts-groups-timeline">
+          <div className="als-groups-stack">
             {parts[activeTab].groups.map((group, gIdx) => (
-              <div key={group.id} className="ielts-group-card">
-                <div className="group-card-header">
-                  <span className="ielts-type-tag">{IELTS_QUESTION_TYPES[group.type]}</span>
+              <div key={group.id} className="als-group-panel">
+                <div className="als-group-top">
+                  <span className="als-type-badge">{IELTS_QUESTION_TYPES[group.type]}</span>
                   
-                  <div className="group-header-actions">
+                  <div className="als-group-actions">
                     <button 
                       type="button" 
                       onClick={() => handleAddQuestionToGroup(activeTab, gIdx)} 
-                      className="btn-add-row"
+                      className="als-add-row-btn"
                     >
                       <Plus size={14} /> Add Row
                     </button>
-                    <button type="button" onClick={() => handleRemoveGroup(activeTab, group.id)} className="btn-remove-group">
+                    <button type="button" onClick={() => handleRemoveGroup(activeTab, group.id)} className="als-delete-group-btn">
                       <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
 
-                <div className="input-group instruction-group">
+                <div className="als-field-block als-instruction-field">
                   <label>Instruction Prompt</label>
                   <input 
                     type="text" 
@@ -587,20 +587,20 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                 </div>
 
                 {group.type === 'LABELLING' && (
-                  <div className="map-image-config-box">
-                    <div className="input-group">
-                      <label className="map-label">
+                  <div className="als-diagram-box">
+                    <div className="als-field-block">
+                      <label className="als-diagram-label">
                         <ImageIcon size={14} /> Upload Diagram or Map Image
                       </label>
-                      <div className="map-upload-row">
-                        <label className={`file-upload-custom-btn ${uploadingMapId === group.id ? 'disabled' : ''}`}>
-                          {uploadingMapId === group.id ? <Loader2 size={14} className="listening-spinner" /> : "Rasm Tanlash"}
+                      <div className="als-diagram-row">
+                        <label className={`als-upload-btn ${uploadingMapId === group.id ? 'als-upload-disabled' : ''}`}>
+                          {uploadingMapId === group.id ? <Loader2 size={14} className="als-spinner-anim" /> : "Rasm Tanlash"}
                           <input 
                             type="file" 
                             accept="image/*" 
                             onChange={(e) => handleMapImageUpload(e, activeTab, gIdx, group.id)} 
                             disabled={uploadingMapId !== null}
-                            className="hidden-file-input" 
+                            className="als-hidden-input" 
                           />
                         </label>
                         <input 
@@ -608,34 +608,34 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                           placeholder="Yoki rasm URL manzilini qo'ying..." 
                           value={group.diagram_image_url || ''} 
                           onChange={(e) => handleGroupMetaChange(activeTab, gIdx, 'diagram_image_url', e.target.value)} 
-                          className="map-url-input"
+                          className="als-diagram-url"
                         />
                       </div>
                     </div>
                     {group.diagram_image_url && (
-                      <div className="map-preview-wrapper">
-                        <img src={group.diagram_image_url} alt="Map Rendering" className="map-preview-img" />
+                      <div className="als-diagram-preview">
+                        <img src={group.diagram_image_url} alt="Map Rendering" className="als-diagram-img" />
                       </div>
                     )}
                   </div>
                 )}
 
                 {(group.type === 'MATCHING' || group.type === 'CLASSIFICATION' || group.type === 'LABELLING') && (
-                  <div className="matching-options-config-box">
-                    <div className="matching-options-header">
+                  <div className="als-matching-box">
+                    <div className="als-matching-top">
                       <p>Matching Options Configuration:</p>
                       <button 
                         type="button"
                         onClick={() => handleAddMatchingOption(activeTab, gIdx)}
-                        className="btn-add-option"
+                        className="als-add-option-btn"
                       >
                         <Plus size={12} /> Add Option
                       </button>
                     </div>
 
-                    <div className="matching-options-grid">
+                    <div className="als-matching-grid">
                       {group.matching_options?.map((opt, oIdx) => (
-                        <div key={oIdx} className="matching-option-item">
+                        <div key={oIdx} className="als-matching-item">
                           <strong>{opt.id}:</strong>
                           <input 
                             type="text" 
@@ -646,7 +646,7 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                           <button 
                             type="button"
                             onClick={() => handleRemoveMatchingOption(activeTab, gIdx, oIdx)}
-                            className="btn-remove-option"
+                            className="als-remove-option-btn"
                           >
                             <X size={14} />
                           </button>
@@ -656,7 +656,7 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                   </div>
                 )}
 
-                <div className="group-questions-inner-list">
+                <div className="als-questions-list">
                   {group.questions?.map((q, qIdx) => {
                     const hasTextBefore = q.has_text_before !== false;
                     const hasCorrectAnswer = q.has_correct_answer !== false;
@@ -666,24 +666,24 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                     return (
                       <div 
                         key={qIdx} 
-                        className={`ielts-question-row-item ${!isQuestionActive ? 'inactive' : ''}`}
+                        className={`als-question-item ${!isQuestionActive ? 'als-question-inactive' : ''}`}
                       >
-                        <div className="inline-q-num">
+                        <div className="als-q-number">
                           <strong>
                             {isQuestionActive ? `Q${q.question_number}` : 'Text'}
                           </strong>
                           <button 
                             type="button" 
                             onClick={() => handleRemoveQuestionFromGroup(activeTab, gIdx, qIdx)}
-                            className="btn-row-minus"
+                            className="als-remove-row-btn"
                           >
                             <Minus size={12} />
                           </button>
                         </div>
 
                         {group.type === 'NOTE_COMPLETION' && (
-                          <div className="note-completion-row-builder">
-                            <div className="note-segment-group">
+                          <div className="als-note-builder">
+                            <div className="als-note-segment">
                               {hasTextBefore && (
                                 <input 
                                   type="text" 
@@ -696,33 +696,33 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                                 type="button" 
                                 title={hasTextBefore ? "Hide Text Before" : "Show Text Before"}
                                 onClick={() => toggleInputVisibility(activeTab, gIdx, qIdx, 'has_text_before', 'text_before', !hasTextBefore)}
-                                className={`visibility-toggle-btn ${hasTextBefore ? 'active' : ''}`}
+                                className={`als-toggle-btn ${hasTextBefore ? 'als-toggle-on' : ''}`}
                               >
                                 {hasTextBefore ? <Eye size={14} /> : <EyeOff size={14} />}
                               </button>
                             </div>
 
-                            <div className="note-segment-group answer-segment">
+                            <div className="als-note-segment als-answer-segment">
                               {hasCorrectAnswer && (
                                 <input 
                                   type="text" 
                                   value={q.correct_answer || ''} 
                                   onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'correct_answer', e.target.value)} 
                                   placeholder="Correct answer..." 
-                                  className="correct-answer-input"
+                                  className="als-correct-input"
                                 />
                               )}
                               <button 
                                 type="button" 
                                 title={hasCorrectAnswer ? "Convert to Static Text (No Answer)" : "Convert to Gap Question"}
                                 onClick={() => toggleInputVisibility(activeTab, gIdx, qIdx, 'has_correct_answer', 'correct_answer', !hasCorrectAnswer)}
-                                className={`visibility-toggle-btn answer ${hasCorrectAnswer ? 'active' : ''}`}
+                                className={`als-toggle-btn als-toggle-answer ${hasCorrectAnswer ? 'als-toggle-on' : ''}`}
                               >
                                 {hasCorrectAnswer ? <Eye size={14} /> : <EyeOff size={14} />}
                               </button>
                             </div>
 
-                            <div className="note-segment-group">
+                            <div className="als-note-segment">
                               {hasTextAfter && (
                                 <input 
                                   type="text" 
@@ -735,7 +735,7 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                                 type="button" 
                                 title={hasTextAfter ? "Hide Text After" : "Show Text After"}
                                 onClick={() => toggleInputVisibility(activeTab, gIdx, qIdx, 'has_text_after', 'text_after', !hasTextAfter)}
-                                className={`visibility-toggle-btn ${hasTextAfter ? 'active' : ''}`}
+                                className={`als-toggle-btn ${hasTextAfter ? 'als-toggle-on' : ''}`}
                               >
                                 {hasTextAfter ? <Eye size={14} /> : <EyeOff size={14} />}
                               </button>
@@ -744,19 +744,30 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                         )}
 
                         {group.type !== 'NOTE_COMPLETION' && (
-                          <div className="standard-question-builder">
-                            <input 
-                              type="text" 
-                              value={q.text || ''} 
-                              onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'text', e.target.value)} 
-                              placeholder="Question text or statement..." 
-                              className="standard-q-text-input"
-                            />
+                          <div className="als-standard-builder">
+                            <div className="als-standard-row" style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%' }}>
+                              <input 
+                                type="text" 
+                                value={q.text || ''} 
+                                onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'text', e.target.value)} 
+                                placeholder="Question text or statement..." 
+                                className="als-standard-text"
+                                style={{ flex: 1 }}
+                              />
+                              <input 
+                                type="text" 
+                                value={q.correct_answer || ''} 
+                                onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'correct_answer', e.target.value)} 
+                                placeholder="Correct Answer (e.g. A)" 
+                                className="als-correct-input"
+                                style={{ width: '180px' }}
+                              />
+                            </div>
 
                             {group.type === 'MULTIPLE_CHOICE' ? (
-                              <div className="mcq-options-inline-builder">
+                              <div className="als-mcq-builder">
                                 {q.options?.map((opt, optIdx) => (
-                                  <div key={optIdx} className="mcq-option-pill">
+                                  <div key={optIdx} className="als-mcq-pill">
                                     <span>{opt.id}:</span>
                                     <input 
                                       type="text" 
@@ -767,7 +778,7 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                                     <button 
                                       type="button" 
                                       onClick={() => handleRemoveQuestionOption(activeTab, gIdx, qIdx, optIdx)}
-                                      className="btn-remove-option"
+                                      className="als-mcq-remove"
                                     >
                                       <X size={12} />
                                     </button>
@@ -776,22 +787,12 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
                                 <button 
                                   type="button" 
                                   onClick={() => handleAddQuestionOption(activeTab, gIdx, qIdx)}
-                                  className="btn-add-option"
+                                  className="als-mcq-add"
                                 >
-                                  <Plus size={12} /> Opt
+                                  <Plus size={12} /> Variant qo'shish
                                 </button>
                               </div>
-                            ) : (
-                              <div className="note-segment-group answer-segment">
-                                <input 
-                                  type="text" 
-                                  value={q.correct_answer || ''} 
-                                  onChange={(e) => handleQuestionFieldChange(activeTab, gIdx, qIdx, 'correct_answer', e.target.value)} 
-                                  placeholder="Correct answer key..." 
-                                  className="correct-answer-input"
-                                />
-                              </div>
-                            )}
+                            ) : null}
                           </div>
                         )}
                       </div>
@@ -803,10 +804,12 @@ const AddListening = ({ onBack, onRefresh, editExamId = null }) => {
           </div>
         </div>
 
-        <button type="submit" disabled={isSaving} className="std-add-btn" style={{ justifyContent: 'center', width: '100%', marginTop: '1rem', padding: '12px' }}>
-          {isSaving ? <Loader2 size={18} className="listening-spinner" /> : <Save size={18} />}
-          {editExamId ? "Imtihonni Yangilash" : "Imtihonni Saqlash"}
-        </button>
+        <div className="als-footer-actions">
+          <button type="submit" disabled={isSaving} className="als-save-btn">
+            {isSaving ? <Loader2 size={18} className="als-spinner-anim" /> : <Save size={18} />}
+            {editExamId ? "Imtihonni Yangilash" : "Imtihonni Saqlash"}
+          </button>
+        </div>
       </form>
     </div>
   );
